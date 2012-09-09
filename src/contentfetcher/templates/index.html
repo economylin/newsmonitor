@@ -1,0 +1,12 @@
+<html>
+  <body>
+    <form action="/fetcher" method="POST">
+    URL: <input type="text" name="url" value="{{ url }}" size="100"/>
+    <br/>Encoding: <input type="text" name="encoding" value="{{ encoding }}"/>
+    Prevent cache: <input type="checkbox" name="preventcache" {% if preventcache %} checked {% endif %}/>
+    <input type="submit" value="Submit" />
+    </form>
+    Content: <textarea name="content" rows="20" cols="100">{{ content }}</textarea>
+    <br/>Fetch url: {{ fetchurl }}
+  </body>
+</html>
