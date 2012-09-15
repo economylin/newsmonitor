@@ -10,18 +10,17 @@ class TestContentFetcher(unittest.TestCase):
 
     def testBasicFetcher(self):
         url = 'http://www.xinhua.org/'
-        encoding = 'UTF-8'
-        fetcher = ContentFetcher(url, encoding)
-        fetchUrl, content = fetcher.fetch()
+        fetcher = ContentFetcher(url)
+        fetchUrl, fetchEncoding, content = fetcher.fetch()
         self.assertEquals(url, fetchUrl)
+        self.assertEquals(fetchEncoding, 'utf-8')
         print content
         self.assertIsNotNone(content)
 
     def testBasicFetcherPreventCache(self):
         url = 'http://www.xinhua.org/'
-        encoding = 'UTF-8'
-        fetcher = ContentFetcher(url, encoding, True)
-        fetchUrl, content = fetcher.fetch()
+        fetcher = ContentFetcher(url, preventCache=True)
+        fetchUrl, fetchEncoding, content = fetcher.fetch()
         self.assertNotEquals(url, fetchUrl)
         print content
         self.assertIsNotNone(content)

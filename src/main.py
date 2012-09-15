@@ -1,4 +1,10 @@
 import webapp2
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'library'))
+
+
 import contentfetcher.handlers
 
 class MainPage(webapp2.RequestHandler):

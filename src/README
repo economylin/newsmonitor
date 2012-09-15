@@ -1,0 +1,3 @@
+ln -s $HOME/workspace-python/python-commonutil/src/commonutil $HOME/workspace-gae/newsmonitor/src/library/commonutil
+ln -s $HOME/workspace-python/python-commonutil/src/chardet $HOME/workspace-gae/newsmonitor/src/library/chardet
+

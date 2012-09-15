@@ -12,7 +12,6 @@ class FetcherPage(webapp2.RequestHandler):
 
     def get(self):
         templateValues = {
-            'encoding': 'UTF-8',
         }
         self._render(templateValues)
 
@@ -22,15 +21,17 @@ class FetcherPage(webapp2.RequestHandler):
         preventcache = not not cgi.escape(self.request.get('preventcache'))
         content = None
         fetchUrl = None
-        if url and encoding:
+        encodingUsed = None
+        if url:
             fetcher = ContentFetcher(url, encoding, preventcache)
-            fetchUrl, content = fetcher.fetch()
+            fetchUrl, encodingUsed, content = fetcher.fetch()
         templateValues = {
             'url': url,
             'encoding': encoding,
             'preventcache': preventcache,
             'content': content,
             'fetchurl': fetchUrl,
+            'encodingused': encodingUsed,
         }
         self._render(templateValues)
 

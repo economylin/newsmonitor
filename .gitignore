@@ -27,4 +27,5 @@ pip-log.txt
 .mr.developer.cfg
 
 # codes from other project
-commonutil
+library
+
