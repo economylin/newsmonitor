@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from contentfetcher import ContentFetcher
+from contentdetector import ContentFetcher
 
 class TestContentFetcher(unittest.TestCase):
 

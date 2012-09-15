@@ -2,9 +2,9 @@ import cgi
 import webapp2
 import os
 from google.appengine.ext.webapp import template
-from contentfetcher import ContentFetcher
+from contentdetector import ContentFetcher
 
-class FetcherPage(webapp2.RequestHandler):
+class DetectorPage(webapp2.RequestHandler):
     def _render(self, templateValues):
         self.response.headers['Content-Type'] = 'text/html'
         path = os.path.join(os.path.dirname(__file__), 'templates', 'index.html')
