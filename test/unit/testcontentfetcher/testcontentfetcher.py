@@ -14,7 +14,6 @@ class TestContentFetcher(unittest.TestCase):
         fetchUrl, fetchEncoding, content = fetcher.fetch()
         self.assertEquals(url, fetchUrl)
         self.assertEquals(fetchEncoding, 'utf-8')
-        print content
         self.assertIsNotNone(content)
 
     def testBasicFetcherPreventCache(self):
@@ -22,7 +21,6 @@ class TestContentFetcher(unittest.TestCase):
         fetcher = ContentFetcher(url, preventCache=True)
         fetchUrl, fetchEncoding, content = fetcher.fetch()
         self.assertNotEquals(url, fetchUrl)
-        print content
         self.assertIsNotNone(content)
 
 
