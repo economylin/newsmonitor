@@ -15,7 +15,8 @@ class MainPage(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
 ('/', MainPage),
-('/detector', webservice.handlers.DetectorPage),
+('/fetch', webservice.handlers.FetchPage),
+('/parse', webservice.handlers.ParsePage),
 ],
                               debug=True)
 

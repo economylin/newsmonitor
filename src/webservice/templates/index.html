@@ -1,14 +1,21 @@
 <html>
   <body>
-    <form action="/detector" method="POST">
+    <form action="/fetch" method="POST">
     URL: <input type="text" name="url" value="{{ url }}" size="100"/>
     <br/>Encoding: <input type="text" name="encoding" value="{{ encoding }}"/>
     Prevent cache: <input type="checkbox" name="preventcache" {% if preventcache %} checked {% endif %}/>
-    <input type="submit" value="Submit" />
+    <input type="submit" value="Fetch" />
+    </form><form action="/parse" method="POST">
+    URL: <input type="text" name="url" value="{{ url }}" readonly="True" size="100"/>
+    <br/>Content:<br/><textarea name="content" rows="20" cols="130">{{ content }}</textarea>
+    <br/>CSS: <input type="text" name="css" value="{{ css }}" size="100"/>
+    <input type="submit" value="Parse" />
     </form>
-    Content: <textarea name="content" rows="20" cols="100">{{ content }}</textarea>
-    <br/>URL: {{ fetchurl }}
-    <br/>Encoding: {{ encodingused }}
+    {% for item in items %}
+        <br/><a href="{{ item.url }} ">{{ item.title }}</a>
+        <img src="{{ item.imgurl }}" width="{{ item.imgwidth }}" height="{{ item.imgheight }}"/>
+        <p>{{ item.content }}</p>
+    {% endfor %}
   </body>
 </html>
 
