@@ -41,17 +41,20 @@ class HtmlContentParser(ContentParser):
         else:# Usually, it contains a 'a' element
             leafobjs.append(soapobj)
         for leafobj in leafobjs:
-            if leafobj.name == 'a' and not item.get('title'):
+            if leafobj.name == 'a' and not item.get('title') and not item.get('url'):
                 title = leafobj.get('title')
                 if not title:
                     title = getTextFromSoapOjb(leafobj)
-                if not title:
-                    continue
-                title = title.strip()
-                if not title:
-                    continue
-                item['title'] = title
-                item['url'] = leafobj.get('href')
+                    if title:
+                        title = title.strip()
+                if not title:# xinhuanet.com uses image to show news title
+                    childimg = leafobj.img
+                    if childimg:
+                        title = childimg.get('alt')
+                url = leafobj.get('href')
+                if title or url:
+                    item['title'] = title
+                    item['url'] = url
             elif leafobj.name == 'img' and not item.get('imgsrc'):
                 if not leafobj.get('src'):
                     continue
@@ -59,9 +62,11 @@ class HtmlContentParser(ContentParser):
                 item['imgwidth'] = leafobj.get('width')
                 item['imgheight'] = leafobj.get('height')
             elif not item.get('content'):
-                item['content'] = getTextFromSoapOjb(leafobj)
-                if item['content']:
-                    item['content'] = item['content'].strip()
+                content = getTextFromSoapOjb(leafobj)
+                if content:
+                    content = content.strip()
+                if content:
+                    item['content'] = content
         return item
 
     def _getByCssSelector(self, soup, selector):

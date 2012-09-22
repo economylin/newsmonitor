@@ -64,6 +64,22 @@ class TestHtmlContentParser(unittest.TestCase):
         item = items[0]
         self.assertEquals(item['url'], u'http://www.tianya.cn/publicforum/content/develop/1/1079839.shtml')
 
+    def testXinhuanet(self):
+        # http://www.xinhuanet.com/
+        content = self._loadTestData('xinhuanet.htm')
+        selector = {
+                     'css': '#pictt a',
+                }
+        parser = HtmlContentParser()
+        items = parser.parse(content, selector)
+
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 1)
+
+        item = items[0]
+        self.assertEquals(item['url'], u'http://news.xinhuanet.com/politics/2012-09/22/c_113173016.htm')
+        self.assertTrue(item['title'].startswith(u'网络反腐'))
+
 
 if __name__ == '__main__':
     unittest.main()
