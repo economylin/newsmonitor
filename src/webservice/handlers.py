@@ -51,7 +51,7 @@ class ParsePage(webapp2.RequestHandler):
         css = self.request.get('css')
         if css:
             parser = HtmlContentParser()
-            items = parser.parse(content, {'css': css})
+            items = parser.parse(content, css)
         else:
             items = []
         templateValues = {

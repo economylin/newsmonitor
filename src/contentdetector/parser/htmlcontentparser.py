@@ -88,10 +88,10 @@ class HtmlContentParser(ContentParser):
                     items.append(item)
         return items
 
-    def parse(self, content, condition):
+    def parse(self, content, css):
         items = []
         soup = BeautifulSoup.BeautifulSoup(content)
-        selectors = condition['css'].split('|')
+        selectors = css.split('|')
         for selector in selectors:
             selector = selector.strip()
             items.extend(self._getByCssSelector(soup, selector))

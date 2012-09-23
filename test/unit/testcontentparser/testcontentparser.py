@@ -18,9 +18,7 @@ class TestHtmlContentParser(unittest.TestCase):
     def testBigPicture(self):
         # http://www.boston.com/bigpicture/
         content = self._loadTestData('bigpicture.htm')
-        selector = {
-                     'css': '[0]: div.headDiv2&h2 a,div.bpImageTop img,div.bpCaption',
-                }
+        selector = '[0]: div.headDiv2&h2 a,div.bpImageTop img,div.bpCaption'
         parser = HtmlContentParser()
         items = parser.parse(content, selector)
 
@@ -36,9 +34,7 @@ class TestHtmlContentParser(unittest.TestCase):
     def testQq(self):
         # http://view.news.qq.com/
         content = self._loadTestData('qq.htm')
-        selector = {
-                     'css': '.left1&.left1pic a, .left1img img',
-                }
+        selector = '.left1&.left1pic a, .left1img img'
         parser = HtmlContentParser()
         items = parser.parse(content, selector)
 
@@ -52,9 +48,7 @@ class TestHtmlContentParser(unittest.TestCase):
     def testTianya(self):
         # http://focus.tianya.cn/
         content = self._loadTestData('tianya.htm')
-        selector = {
-                     'css': 'h1 a',
-                }
+        selector = 'h1 a'
         parser = HtmlContentParser()
         items = parser.parse(content, selector)
 
@@ -67,9 +61,7 @@ class TestHtmlContentParser(unittest.TestCase):
     def testXinhuanet(self):
         # http://www.xinhuanet.com/
         content = self._loadTestData('xinhuanet.htm')
-        selector = {
-                     'css': '#pictt a',
-                }
+        selector = '#pictt a'
         parser = HtmlContentParser()
         items = parser.parse(content, selector)
 
