@@ -1,4 +1,0 @@
-python $HOME/bin/google_appengine/dev_appserver.py $HOME/workspace-gae/newsmonitor/src
-
-python $HOME/bin/google_appengine/appcfg.py update $HOME/workspace-gae/newsmonitor/src
-

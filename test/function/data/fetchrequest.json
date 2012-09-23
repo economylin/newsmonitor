@@ -1,0 +1,9 @@
+http://localhost:8081/api/fetch/response
+
+{
+"slug": "qq",
+"fetchurl": "http://view.news.qq.com/",
+"selector": ".left1&.left1pic a, .left1img img",
+"fetchhash": null,
+"callback": "http://localhost:8080/headline/fetch/response"
+}
