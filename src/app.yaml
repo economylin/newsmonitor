@@ -8,3 +8,7 @@ handlers:
 - url: /.*
   script: main.app
 
+libraries:
+- name: lxml
+  version: latest
+

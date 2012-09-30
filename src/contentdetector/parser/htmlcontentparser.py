@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import BeautifulSoup
+import bs4
 import soupselect
 from contentparser import ContentParser
 
 def getTextFromSoapOjb(soapobj):
     if not soapobj:
         return ''
-    if isinstance(soapobj, BeautifulSoup.Comment):
+    if isinstance(soapobj, bs4.Comment):
         return ''
     if hasattr(soapobj, 'parent') and hasattr(soapobj.parent, 'name') and soapobj.parent.name in ['style', 'script', 'head', 'title']:
         return ''
@@ -90,7 +90,7 @@ class HtmlContentParser(ContentParser):
 
     def parse(self, content, css):
         items = []
-        soup = BeautifulSoup.BeautifulSoup(content)
+        soup = bs4.BeautifulSoup(content, 'lxml')
         selectors = css.split('|')
         for selector in selectors:
             selector = selector.strip()
