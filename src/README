@@ -1,7 +1,6 @@
 ln -s $HOME/workspace-python/python-commonutil/src/commonutil $HOME/workspace-gae/newsmonitor/src/library/commonutil
 ln -s $HOME/workspace-python/python-commonutil/src/chardet $HOME/workspace-gae/newsmonitor/src/library/chardet
 
-ln -s $HOME/workspace-python/python-commonutil/src/bs4 $HOME/workspace-gae/newsmonitor/src/library/bs4
-ln -s $HOME/workspace-python/python-commonutil/src/soupselect.py $HOME/workspace-gae/newsmonitor/src/library/soupselect.py
-
+ln -s $HOME/workspace-python/python-commonutil/src/cssselect $HOME/workspace-gae/newsmonitor/src/library/cssselect
+ln -s $HOME/workspace-python/python-commonutil/src/pyquery $HOME/workspace-gae/newsmonitor/src/library/pyquery
 

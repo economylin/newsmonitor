@@ -18,7 +18,7 @@ class TestHtmlContentParser(unittest.TestCase):
     def testBigPicture(self):
         # http://www.boston.com/bigpicture/
         content = self._loadTestData('bigpicture.htm')
-        selector = '[0]: div.headDiv2&h2 a,div.bpImageTop img,div.bpCaption'
+        selector = 'div.headDiv2:first&h2 a,div.bpImageTop img,div.bpCaption'
         parser = HtmlContentParser()
         items = parser.parse(content, selector)
 
@@ -44,6 +44,8 @@ class TestHtmlContentParser(unittest.TestCase):
         item = items[0]
         self.assertEquals(item['url'], u'http://view.news.qq.com/zt2012/bjd/index.htm')
         self.assertEquals(item['imgurl'], u'http://img1.gtimg.com/view/pics/hv1/112/69/1152/74926507.jpg')
+        self.assertIsNotNone(item['imgwidth'])
+        self.assertIsNotNone(item['imgheight'])
 
     def testTianya(self):
         # http://focus.tianya.cn/
