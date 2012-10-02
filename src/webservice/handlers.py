@@ -1,3 +1,4 @@
+import xml.sax.saxutils
 import webapp2
 import os
 from google.appengine.ext.webapp import template
@@ -47,7 +48,7 @@ class ParsePage(webapp2.RequestHandler):
 
     def post(self):
         url = self.request.get('url')
-        content = self.request.get('content')
+        content = xml.sax.saxutils.unescape(self.request.get('content'))
         css = self.request.get('css')
         if css:
             parser = HtmlContentParser()

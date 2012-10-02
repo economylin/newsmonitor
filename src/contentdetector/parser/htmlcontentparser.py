@@ -52,7 +52,9 @@ class HtmlContentParser(ContentParser):
 
         for selectedelement in selectedelements:
             self._fillItem(item, selectedelement)
-        return item
+        if 'title' in item or 'url' in item:
+            return item
+        return None
 
     def _getByCssSelector(self, htmlelement, selector):
         items = []
