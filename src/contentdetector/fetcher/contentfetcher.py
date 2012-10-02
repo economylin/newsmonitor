@@ -6,6 +6,8 @@ import logging
 import urllib2
 import chardet
 
+_FETCH_TIMEOUT = 20
+
 class ContentFetcher(object):
     def __init__(self, url, encoding=None, preventCache=False):
         self.url = url
@@ -28,7 +30,7 @@ class ContentFetcher(object):
                 fetchUrl += '_preventCache=' + str(dateutil.getIntByMinitue())
             req = urllib2.Request(fetchUrl)
             self.authenticate(req)
-            res = urllib2.urlopen(req)
+            res = urllib2.urlopen(req, timeout=_FETCH_TIMEOUT)
             content = res.read()
             res.close()
             encodingUsed = self.encoding
@@ -43,7 +45,7 @@ class ContentFetcher(object):
             return fetchUrl, encodingUsed, unicode(content, encodingUsed,'ignore')
         except Exception, err:
             response = 'Error on fetching data from %s:%s.' % (self.url, err)
-            logging.error(response)
+            logging.exception(response)
             return fetchUrl, encodingUsed, None
 
 class BasicAuthContentFetcher(ContentFetcher):
