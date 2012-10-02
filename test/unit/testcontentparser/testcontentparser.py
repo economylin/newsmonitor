@@ -15,6 +15,32 @@ class TestHtmlContentParser(unittest.TestCase):
             content = f.read()
         return unicode(content, 'utf-8','ignore')
 
+    def testBasic(self):
+        url = 'http://www.googl.com/'
+        content = self._loadTestData('basic.htm')
+
+        selector = 'a'
+        parser = HtmlContentParser()
+        items = parser.parse(url, content, selector)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 1)
+        self.assertEquals(items[0]['title'], 'link1')
+
+        # add '@' to the end, then will return all the matched items.
+        selector = 'a@'
+        parser = HtmlContentParser()
+        items = parser.parse(url, content, selector)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 5)
+
+        # use '[]' to select which item to return
+        selector = '[2]a'
+        parser = HtmlContentParser()
+        items = parser.parse(url, content, selector)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 1)
+        self.assertEquals(items[0]['title'], 'link3')
+
     def testBigPicture(self):
         url = 'http://www.boston.com/bigpicture/'
         content = self._loadTestData('bigpicture.htm')

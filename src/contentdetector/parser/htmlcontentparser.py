@@ -58,7 +58,18 @@ class HtmlContentParser(ContentParser):
         return None
 
     def _getByCssSelector(self, htmlelement, selector):
+        requiredIndex = -1
         items = []
+        if selector.startswith('['):
+            found = selector.find(']', 1)
+            if found >= 0:
+                try:
+                    requiredIndex = int(selector[1:found])
+                except:
+                    pass
+            else:
+                found = 0
+            selector = selector[found + 1:]
         selectorpath = selector.split('&', 1)
         if len(selectorpath) > 1:
             parentselector = selectorpath[0].strip()
@@ -74,16 +85,25 @@ class HtmlContentParser(ContentParser):
                 item = self._getItem(htmlelement)
                 if item:
                     items.append(item)
+        if requiredIndex >= 0:
+            return items[requiredIndex:requiredIndex+1]
         return items
 
     def parse(self, baseurl, content, css):
         css = css.encode('utf-8','ignore')
         items = []
         htmlelement = lxml.html.fromstring(content)
+        if css.endswith('@'):
+            returnmultiple = True
+            css = css[:-1]
+        else:
+            returnmultiple = False
         selectors = css.split('|')
         for selector in selectors:
             selector = selector.strip()
             items.extend(self._getByCssSelector(htmlelement, selector))
+        if not returnmultiple:
+            items = items[0:1]
         for index, item in enumerate(items):
             item['rank'] =  index + 1
             itemurl = item.get('url')
