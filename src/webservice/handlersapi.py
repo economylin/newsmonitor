@@ -32,13 +32,14 @@ class FetchRequest(webapp2.RequestHandler):
 class FetchResponse(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
-        fetcher = ContentFetcher(data['fetchurl'])
+        fetchurl = data['fetchurl']
+        fetcher = ContentFetcher(fetchurl)
         _, _, content = fetcher.fetch()
         items = []
         responseData = {}
         if content:
             parser = HtmlContentParser()
-            items = parser.parse(content, data['selector'])
+            items = parser.parse(fetchurl, content, data['selector'])
             if not items:
                 logging.error('Failed to parse content form %s by %s.' % (data['fetchurl'], data['selector']))
         else:
