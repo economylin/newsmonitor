@@ -1,4 +1,8 @@
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Fetch page</title>
+</head>
   <body>
     <form action="/fetch" method="POST">
     URL: <input type="text" name="url" value="{{ url }}" size="100"/>
@@ -11,6 +15,7 @@
     <br/>CSS: <input type="text" name="css" value="{{ css }}" size="100"/>
     <input type="submit" value="Parse" />
     </form>
+    {{ items }}
     {% for item in items %}
         <br/><a href="{{ item.url }} ">{{ item.title }}</a>
         <img src="{{ item.imgurl }}" width="{{ item.imgwidth }}" height="{{ item.imgheight }}"/>

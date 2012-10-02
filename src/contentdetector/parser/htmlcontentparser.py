@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from contentparser import ContentParser
+from urlparse import urljoin
 import lxml
 import pyquery
+from contentparser import ContentParser
 
 class HtmlContentParser(ContentParser):
 
@@ -75,7 +76,8 @@ class HtmlContentParser(ContentParser):
                     items.append(item)
         return items
 
-    def parse(self, content, css):
+    def parse(self, baseurl, content, css):
+        css = css.encode('utf-8','ignore')
         items = []
         htmlelement = lxml.html.fromstring(content)
         selectors = css.split('|')
@@ -84,5 +86,8 @@ class HtmlContentParser(ContentParser):
             items.extend(self._getByCssSelector(htmlelement, selector))
         for index, item in enumerate(items):
             item['rank'] =  index + 1
+            itemurl = item.get('url')
+            if itemurl:
+                item['url'] = urljoin(baseurl, itemurl)
         return items
 
