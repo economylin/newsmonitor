@@ -45,8 +45,12 @@ class FetchResponse(webapp2.RequestHandler):
         data = json.loads(self.request.body)
         newscenterSlug = data['slug']
         fetchurl = data['fetchurl']
+        preventcache = data.get('preventcache')
+        useragent = data.get('useragent')
+        timeout = data.get('timeout')
         encoding = data.get('encoding')
-        fetcher = ContentFetcher(fetchurl, encoding)
+        fetcher = ContentFetcher(fetchurl, preventcache=preventcache, useragent=useragent,
+                         timeout=timeout, encoding=encoding)
         _, _, content = fetcher.fetch()
         items = []
         responseData = {}

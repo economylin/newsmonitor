@@ -7,12 +7,22 @@ import urllib2
 import chardet
 
 _FETCH_TIMEOUT = 20
+_USER_AGENT = {
+    'ie': 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)',
+    'firefox': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:15.0) Gecko/20100101 Firefox/15.0.1',
+}
 
 class ContentFetcher(object):
-    def __init__(self, url, encoding=None, preventCache=False):
+    def __init__(self, url, preventcache=False, useragent=None, timeout=None, encoding=None):
         self.url = url
+        self.preventcache = preventcache
+        self.useragent = _USER_AGENT.get(useragent, useragent) if useragent else None
+
+        if timeout:
+            self.timeout = timeout
+        else:
+            self.timeout = _FETCH_TIMEOUT
         self.encoding = encoding
-        self.preventCache = preventCache
 
     def authenticate(self, req):        
         pass
@@ -22,7 +32,7 @@ class ContentFetcher(object):
         encodingUsed = None
         try:
             fetchUrl = self.url
-            if self.preventCache:
+            if self.preventcache:
                 if fetchUrl.find('?') > 0:
                     fetchUrl += '&'
                 else:
@@ -30,7 +40,9 @@ class ContentFetcher(object):
                 fetchUrl += '_preventCache=' + str(dateutil.getIntByMinitue())
             req = urllib2.Request(fetchUrl)
             self.authenticate(req)
-            res = urllib2.urlopen(req, timeout=_FETCH_TIMEOUT)
+            if self.useragent:
+                req.add_header('User-agent', self.useragent)
+            res = urllib2.urlopen(req, timeout=self.timeout)
             content = res.read()
             res.close()
             encodingUsed = self.encoding

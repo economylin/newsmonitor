@@ -5,9 +5,11 @@
 </head>
   <body>
     <form action="/fetch" method="POST">
-    URL: <input type="text" name="url" value="{{ url }}" size="100"/>
-    <br/>Encoding: <input type="text" name="encoding" value="{{ encoding }}"/>
+    URL: <input type="text" name="url" value="{{ url }}" size="80"/>
     Prevent cache: <input type="checkbox" name="preventcache" {% if preventcache %} checked {% endif %}/>
+    <br/>User agent: <input type="text" name="useragent" size="80" value="{{ useragent }}"/>
+    <br/>Timeout: <input type="text" name="timeout" value="{{ timeout }}"/>
+    Encoding: <input type="text" name="encoding" value="{{ encoding }}"/>
     <input type="submit" value="Fetch" />
     </form><form action="/parse" method="POST">
     URL: <input type="text" name="url" value="{{ url }}" readonly="True" size="100"/>

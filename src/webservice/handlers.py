@@ -17,18 +17,26 @@ class FetchPage(webapp2.RequestHandler):
 
     def post(self):
         url = self.request.get('url')
-        encoding = self.request.get('encoding')
         preventcache = not not self.request.get('preventcache')
+        useragent = self.request.get('useragent')
+        timeout = self.request.get('timeout')
+        if timeout:
+            timeout = int(timeout)
+        encoding = self.request.get('encoding')
         content = None
         fetchUrl = None
         encodingUsed = None
         if url:
-            fetcher = ContentFetcher(url, encoding, preventcache)
+            fetcher = ContentFetcher(url, preventcache=preventcache, useragent=useragent,
+                           timeout=timeout, encoding=encoding
+                         )
             fetchUrl, encodingUsed, content = fetcher.fetch()
         templateValues = {
             'url': url,
-            'encoding': encoding,
             'preventcache': preventcache,
+            'useragent': useragent,
+            'timeout': timeout,
+            'encoding': encoding,
             'content': content,
             'fetchurl': fetchUrl,
             'encodingused': encodingUsed,
