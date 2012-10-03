@@ -9,16 +9,27 @@ import webapp2
 
 from contentdetector import ContentFetcher, HtmlContentParser
 
-def _calculateHash(items):
+def _calculateHash(newscenterSlug, items):
     lines = []
     for item in items:
         url = item.get('url')
         title = item.get('title')
         if url:
-            lines.append(url)
+            if type(url) == unicode:
+                lines.append(url.encode('utf-8','ignore'))
+            else:
+                lines.append(url)
         elif title:
-            lines.append(title)
-    return md5(''.join(lines)).hexdigest()
+            if type(title) == unicode:
+                lines.append(title.encode('utf-8','ignore'))
+            else:
+                lines.append(title)
+    value = ''
+    try:
+        value = md5(''.join(lines)).hexdigest()
+    except:
+        logging.exception('%s: %s.' % (newscenterSlug, items, ))
+    return value
 
 class FetchRequest(webapp2.RequestHandler):
     def post(self):
@@ -32,8 +43,10 @@ class FetchRequest(webapp2.RequestHandler):
 class FetchResponse(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
+        newscenterSlug = data['slug']
         fetchurl = data['fetchurl']
-        fetcher = ContentFetcher(fetchurl)
+        encoding = data.get('encoding')
+        fetcher = ContentFetcher(fetchurl, encoding)
         _, _, content = fetcher.fetch()
         items = []
         responseData = {}
@@ -45,7 +58,7 @@ class FetchResponse(webapp2.RequestHandler):
         else:
             logging.error('Failed to fetch content form %s.' % (data['fetchurl'], ))
         if items:
-            fetchhash = _calculateHash(items)
+            fetchhash = _calculateHash(newscenterSlug, items)
             if fetchhash != data['fetchhash']:
                 responseData = {
                     'request': data,

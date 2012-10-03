@@ -90,7 +90,8 @@ class HtmlContentParser(ContentParser):
         return items
 
     def parse(self, baseurl, content, css):
-        css = css.encode('utf-8','ignore')
+        if type(css) == unicode:
+            css = css.encode('utf-8','ignore')
         items = []
         htmlelement = lxml.html.fromstring(content)
         if css.endswith('@'):
