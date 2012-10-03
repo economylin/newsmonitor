@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from urlparse import urljoin
 import lxml
+import lxml.html.clean
 import pyquery
 from contentparser import ContentParser
 
@@ -40,6 +41,8 @@ class HtmlContentParser(ContentParser):
                 item['content'] = content
 
     def _getItem(self, parentelement, selector=None):
+        cleaner = lxml.html.clean.Cleaner()
+        parentelement = cleaner.clean_html(parentelement)
         item = {}
         selectedelements = []
         if selector:# Usually, it contains 'a', 'img', 'p', 'div'
