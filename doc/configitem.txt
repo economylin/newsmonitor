@@ -1,0 +1,4 @@
+globalconfig: {
+  "fetchtimeout": 10
+}
+

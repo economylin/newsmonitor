@@ -1,6 +1,15 @@
-ln -s $HOME/workspace-python/python-commonutil/src/commonutil $HOME/workspace-gae/newsmonitor/src/library/commonutil
-ln -s $HOME/workspace-python/python-commonutil/src/chardet $HOME/workspace-gae/newsmonitor/src/library/chardet
+UTIL_PROJECT_SRC=$HOME/workspace-python/python-commonutil/src
+LIBRARY_SRC=$HOME/workspace-gae/newsmonitor/src/library
 
-ln -s $HOME/workspace-python/python-commonutil/src/cssselect $HOME/workspace-gae/newsmonitor/src/library/cssselect
-ln -s $HOME/workspace-python/python-commonutil/src/pyquery $HOME/workspace-gae/newsmonitor/src/library/pyquery
+mkdir $LIBRARY_SRC
+
+ln -s $UTIL_PROJECT_SRC/commonutil $LIBRARY_SRC/commonutil
+ln -s $UTIL_PROJECT_SRC/chardet $LIBRARY_SRC/chardet
+
+ln -s $UTIL_PROJECT_SRC/cssselect $LIBRARY_SRC/cssselect
+ln -s $UTIL_PROJECT_SRC/pyquery $LIBRARY_SRC/pyquery
+
+
+ln -s $UTIL_PROJECT_SRC/configmanager $LIBRARY_SRC/configmanager
+ln -s $UTIL_PROJECT_SRC/jsonpickle $LIBRARY_SRC/jsonpickle
 
