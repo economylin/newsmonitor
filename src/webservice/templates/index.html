@@ -5,23 +5,26 @@
 </head>
   <body>
     <form action="/fetch" method="POST">
-    URL: <input type="text" name="url" value="{{ url }}" size="80"/>
+    Slug: <input type="text" name="slug" value="{{ slug }}" size="10"/>
+    Name: <input type="text" name="name" value="{{ name }}" size="10"/>
+    <br/>URL: <input type="text" name="url" value="{{ url }}" size="80"/>
     Prevent cache: <input type="checkbox" name="preventcache" {% if preventcache %} checked {% endif %}/>
     <br/>User agent: <input type="text" name="useragent" size="80" value="{{ useragent }}"/>
-    <br/>Timeout: <input type="text" name="timeout" value="{{ timeout }}"/>
-    Encoding: <input type="text" name="encoding" value="{{ encoding }}"/>
-    <input type="submit" value="Fetch" />
-    </form><form action="/parse" method="POST">
-    URL: <input type="text" name="url" value="{{ url }}" readonly="True" size="100"/>
-    <br/>Content:<br/><textarea name="content" rows="20" cols="130">{{ content }}</textarea>
-    <br/>CSS: <input type="text" name="css" value="{{ css }}" size="100"/>
-    <input type="submit" value="Parse" />
+    <br/>Cookie: <input type="text" name="cookie" size="80" value="{{ cookie }}"/>
+    <br/>Timeout: <input type="text" name="timeout" value="{{ timeout }}" size="10"/>
+    Encoding: <input type="text" name="encoding" value="{{ encoding }}" size="10"/>
+    <br/><input type="text" name="fetchurl" value="{{ fetchurl }}" size="80" readonly="True"/>
+    <input type="text" name="parsedencoding" value="{{ parsedencoding }}" size="10" readonly="True"/>
+    <br/><textarea name="content" rows="10" cols="130">{{ content }}</textarea>
+    <br/>Selector: <input type="text" name="selector" value="{{ selector }}" size="80"/>
+    <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/><input type="submit" value="Submit" />
     </form>
-    {{ items }}
+    <br/><textarea rows="3" cols="130">{{ newscenter }}</textarea>
+    <br/>{{ items }}
     {% for item in items %}
-        <br/><a href="{{ item.url }} ">{{ item.title }}</a>
-        <img src="{{ item.imgurl }}" width="{{ item.imgwidth }}" height="{{ item.imgheight }}"/>
-        <p>{{ item.content }}</p>
+        <br/><br/><a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
+        {% if item.imgurl %}<img src="{{ item.imgurl }}" width="{{ item.imgwidth }}" height="{{ item.imgheight }}"/>{% endif %}
+        {% if item.content %}<br/><p>{{ item.content }}</p>{% endif %}
     {% endfor %}
   </body>
 </html>

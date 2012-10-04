@@ -47,9 +47,11 @@ class FetchResponse(webapp2.RequestHandler):
         fetchurl = data['fetchurl']
         preventcache = data.get('preventcache')
         useragent = data.get('useragent')
+        cookie = data.get('cookie')
         timeout = data.get('timeout')
         encoding = data.get('encoding')
-        fetcher = ContentFetcher(fetchurl, preventcache=preventcache, useragent=useragent,
+        fetcher = ContentFetcher(fetchurl, preventcache=preventcache,
+                         useragent=useragent, cookie=cookie,
                          timeout=timeout, encoding=encoding)
         _, _, content = fetcher.fetch()
         items = []
