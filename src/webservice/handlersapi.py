@@ -35,7 +35,7 @@ class FetchRequest(webapp2.RequestHandler):
     def post(self):
         rawdata = self.request.body
         # Use queue so we have a longer deadline.
-        taskqueue.add(queue_name="fetch", payload=rawdata, url='/api/fetch/response')
+        taskqueue.add(queue_name="default", payload=rawdata, url='/api/fetch/response')
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write('Request is accepted.')
 
