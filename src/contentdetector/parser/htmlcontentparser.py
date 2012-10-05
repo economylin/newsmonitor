@@ -92,7 +92,7 @@ class HtmlContentParser(ContentParser):
             return items[requiredIndex:requiredIndex+1]
         return items
 
-    def parse(self, baseurl, content, css):
+    def parse(self, baseurl, css, content):
         if type(css) == unicode:
             css = css.encode('utf-8','ignore')
         items = []

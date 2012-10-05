@@ -21,7 +21,7 @@ class TestHtmlContentParser(unittest.TestCase):
 
         selector = 'a'
         parser = HtmlContentParser()
-        items = parser.parse(url, content, selector)
+        items = parser.parse(url, selector, content)
         self.assertIsNotNone(items)
         self.assertEquals(len(items), 1)
         self.assertEquals(items[0]['title'], 'link1')
@@ -29,14 +29,14 @@ class TestHtmlContentParser(unittest.TestCase):
         # add '@' to the end, then will return all the matched items.
         selector = 'a@'
         parser = HtmlContentParser()
-        items = parser.parse(url, content, selector)
+        items = parser.parse(url, selector, content)
         self.assertIsNotNone(items)
         self.assertEquals(len(items), 5)
 
         # use '[]' to select which item to return
         selector = '[2]a'
         parser = HtmlContentParser()
-        items = parser.parse(url, content, selector)
+        items = parser.parse(url, selector, content)
         self.assertIsNotNone(items)
         self.assertEquals(len(items), 1)
         self.assertEquals(items[0]['title'], 'link3')
@@ -46,7 +46,7 @@ class TestHtmlContentParser(unittest.TestCase):
         content = self._loadTestData('bigpicture.htm')
         selector = 'div.headDiv2:first&h2 a,div.bpImageTop img,div.bpCaption'
         parser = HtmlContentParser()
-        items = parser.parse(url, content, selector)
+        items = parser.parse(url, selector, content)
 
         self.assertIsNotNone(items)
         self.assertEquals(len(items), 1)
@@ -62,7 +62,7 @@ class TestHtmlContentParser(unittest.TestCase):
         content = self._loadTestData('qq.htm')
         selector = '.left1&.left1pic a, .left1img img'
         parser = HtmlContentParser()
-        items = parser.parse(url, content, selector)
+        items = parser.parse(url, selector, content)
 
         self.assertIsNotNone(items)
         self.assertEquals(len(items), 1)
@@ -78,7 +78,7 @@ class TestHtmlContentParser(unittest.TestCase):
         content = self._loadTestData('tianya.htm')
         selector = 'h1 a'
         parser = HtmlContentParser()
-        items = parser.parse(url, content, selector)
+        items = parser.parse(url, selector, content)
 
         self.assertIsNotNone(items)
         self.assertEquals(len(items), 1)
@@ -91,7 +91,7 @@ class TestHtmlContentParser(unittest.TestCase):
         content = self._loadTestData('xinhuanet.htm')
         selector = '#pictt a'
         parser = HtmlContentParser()
-        items = parser.parse(url, content, selector)
+        items = parser.parse(url, selector, content)
 
         self.assertIsNotNone(items)
         self.assertEquals(len(items), 1)
@@ -105,7 +105,7 @@ class TestHtmlContentParser(unittest.TestCase):
         content = self._loadTestData('govcn.htm')
         selector = 'a.hei14:first'
         parser = HtmlContentParser()
-        items = parser.parse(url, content, selector)
+        items = parser.parse(url, selector, content)
 
         self.assertIsNotNone(items)
         self.assertEquals(len(items), 1)

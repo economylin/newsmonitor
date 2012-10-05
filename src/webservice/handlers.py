@@ -43,7 +43,7 @@ class FetchPage(webapp2.RequestHandler):
             fetchurl, parsedencoding, content = fetcher.fetch()
         if content and selector:
             parser = HtmlContentParser()
-            items = parser.parse(url, content, selector)
+            items = parser.parse(url, selector, content)
         newscenter = {
                     'slug': slug,
                     'name': name,

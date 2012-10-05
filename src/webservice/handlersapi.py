@@ -9,7 +9,9 @@ import webapp2
 
 from contentdetector import ContentFetcher, HtmlContentParser
 
-def _calculateHash(newscenterSlug, items):
+_URL_TIMEOUT = 30
+
+def _calculateHash(items):
     lines = []
     for item in items:
         url = item.get('url')
@@ -28,8 +30,37 @@ def _calculateHash(newscenterSlug, items):
     try:
         value = md5(''.join(lines)).hexdigest()
     except:
-        logging.exception('%s: %s.' % (newscenterSlug, items, ))
+        logging.exception('items: %s.' % (items, ))
     return value
+
+def _fetchContent(requestdata):
+    fetchurl = requestdata['fetchurl']
+    preventcache = requestdata.get('preventcache')
+    useragent = requestdata.get('useragent')
+    cookie = requestdata.get('cookie')
+    timeout = requestdata.get('timeout')
+    encoding = requestdata.get('encoding')
+    fetcher = ContentFetcher(fetchurl, preventcache=preventcache,
+                         useragent=useragent, cookie=cookie,
+                         timeout=timeout, encoding=encoding)
+    _, _, content = fetcher.fetch()
+    return content
+
+def _parseItems(fetchurl, selector, content):
+    parser = HtmlContentParser()
+    items = parser.parse(fetchurl, selector, content)
+    return items
+
+def _pushItemsBack(callbackurl, responseData):
+    try:
+        f = urllib2.urlopen(callbackurl, json.dumps(responseData),
+                            timeout=_URL_TIMEOUT)
+        f.read()
+        f.close()
+        return True
+    except Exception:
+        logging.exception('Failed to post data to "%s".' % (callbackurl, ))
+    return False
 
 class FetchRequest(webapp2.RequestHandler):
     def post(self):
@@ -52,41 +83,51 @@ class BatchFetchRequest(webapp2.RequestHandler):
 
 class SingleFetchResponse(webapp2.RequestHandler):
     def post(self):
-        data = json.loads(self.request.body)
-        newscenterSlug = data['slug']
-        fetchurl = data['fetchurl']
-        preventcache = data.get('preventcache')
-        useragent = data.get('useragent')
-        cookie = data.get('cookie')
-        timeout = data.get('timeout')
-        encoding = data.get('encoding')
-        fetcher = ContentFetcher(fetchurl, preventcache=preventcache,
-                         useragent=useragent, cookie=cookie,
-                         timeout=timeout, encoding=encoding)
-        _, _, content = fetcher.fetch()
-        items = []
-        responseData = {}
-        if content:
-            parser = HtmlContentParser()
-            items = parser.parse(fetchurl, content, data['selector'])
-            if not items:
-                logging.error('Failed to parse content form %s by %s.' % (data['fetchurl'], data['selector']))
-        else:
-            logging.error('Failed to fetch content form %s.' % (data['fetchurl'], ))
-        if items:
-            fetchhash = _calculateHash(newscenterSlug, items)
-            if fetchhash != data['fetchhash']:
-                responseData = {
-                    'request': data,
-                    'result': {
-                        'items': items,
-                        'fetchhash': fetchhash,
-                    },
-                }
-        if responseData:            
-            f = urllib2.urlopen(data['callback'], json.dumps(responseData))
-            response = f.read()
-            f.close()
+        requestdata = json.loads(self.request.body)
+
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write('Response is generated.')
+
+        content = _fetchContent(requestdata)
+        slug = requestdata['slug']
+        fetchurl = requestdata['fetchurl']
+        if not content:
+            message = 'Failed to fetch content form %s for %s.' % (fetchurl, slug, )
+            logging.error(message)
+            self.response.out.write(message)
+            return
+
+        selector = requestdata['selector']
+        items = _parseItems(fetchurl, selector, content)
+        if not items:
+            message = 'Failed to parse items from %s for %s by %s.' % (
+                                  fetchurl, slug, selector)
+            logging.error(message)
+            self.response.out.write(message)
+            return
+        message = 'Items got for %s.' % (slug, )
+        logging.info(message)
+        self.response.out.write(message)
+
+        oldhash = requestdata['fetchhash']
+        fetchhash = _calculateHash(items)
+        if oldhash == fetchhash:
+            return
+
+        callbackurl = requestdata['callback']
+        responseData = {
+                'request': requestdata,
+                'result': {
+                    'items': items,
+                    'fetchhash': fetchhash,
+                },
+        }
+        if not _pushItemsBack(callbackurl, responseData):
+            message = 'Failed to push items back for %s to %s.' % (
+                                  slug, callbackurl)
+            logging.error(message)
+            self.response.out.write(message)
+            return
+        message = 'Push items back for %s to %s.' % (slug, callbackurl)
+        logging.info(message)
+        self.response.out.write(message)
 

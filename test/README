@@ -1,0 +1,2 @@
+python $HOME/bin/google_appengine/dev_appserver.py --help
+python $HOME/bin/google_appengine/dev_appserver.py $HOME/workspace-gae/newsmonitor/src --port 8081 --datastore_path=$HOME/workspace-gae/newsmonitor/test/data/newsmonitor.datastore

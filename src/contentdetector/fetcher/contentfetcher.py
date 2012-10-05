@@ -57,7 +57,7 @@ class ContentFetcher(object):
         except Exception, err:
             response = 'Error on fetching data from %s:%s.' % (self.url, err)
             logging.exception(response)
-            return fetchUrl, encodingUsed, None
+            return fetchUrl, encodingUsed, ''
 
 class BasicAuthContentFetcher(ContentFetcher):
     def __init__(self, url, username, password, encoding=None, preventCache=False):

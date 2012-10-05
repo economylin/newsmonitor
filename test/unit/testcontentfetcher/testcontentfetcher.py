@@ -10,7 +10,7 @@ class TestContentFetcher(unittest.TestCase):
 
     def testBasicFetcher(self):
         url = 'http://www.xinhua.org/'
-        fetcher = ContentFetcher(url)
+        fetcher = ContentFetcher(url, timeout=10)
         fetchUrl, fetchEncoding, content = fetcher.fetch()
         self.assertEquals(url, fetchUrl)
         self.assertEquals(fetchEncoding, 'utf-8')
@@ -18,7 +18,7 @@ class TestContentFetcher(unittest.TestCase):
 
     def testBasicFetcherPreventCache(self):
         url = 'http://www.xinhua.org/'
-        fetcher = ContentFetcher(url, preventCache=True)
+        fetcher = ContentFetcher(url, preventCache=True, timeout=10)
         fetchUrl, fetchEncoding, content = fetcher.fetch()
         self.assertNotEquals(url, fetchUrl)
         self.assertIsNotNone(content)
