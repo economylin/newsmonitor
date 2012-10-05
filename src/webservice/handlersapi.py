@@ -34,13 +34,22 @@ def _calculateHash(newscenterSlug, items):
 class FetchRequest(webapp2.RequestHandler):
     def post(self):
         rawdata = self.request.body
-        # Use queue so we have a longer deadline.
-        taskqueue.add(queue_name="default", payload=rawdata, url='/api/fetch/response')
+        taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/batch')
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write('Request is accepted.')
 
+class BatchFetchRequest(webapp2.RequestHandler):
+    def post(self):
+        data = json.loads(self.request.body)
+        items = data.get['items']
+        for item in items:
+            rawdata = json.dumps(item)
+            taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/single')
+        self.response.headers['Content-Type'] = 'text/plain'
+        self.response.out.write('Put fetch task into queue.')
 
-class FetchResponse(webapp2.RequestHandler):
+
+class SingleFetchResponse(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
         newscenterSlug = data['slug']

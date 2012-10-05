@@ -1,3 +1,0 @@
-http://localhost:8080/headline/fetch/response
-
-{"request": {"fetchhash": null, "fetchurl": "http://view.news.qq.com/", "callback": "http://localhost:8080/headline/fetch/response", "slug": "qq", "selector": ".left1&.left1pic a, .left1img img"}, "result": {"items": [{"imgwidth": "362", "title": "\u9a82\u674e\u5a1c\u6c49\u5978\u8005\u662f\u6c49\u5978\uff1f", "url": "http://view.news.qq.com/zt2012/lnhj/index.htm", "rank": 1, "imgheight": "284", "imgurl": "http://img1.gtimg.com/view/pics/hv1/174/159/1152/74949519.jpg"}], "fetchhash": "ac87773d447ba80a3a107b5dcc3efe44"}}

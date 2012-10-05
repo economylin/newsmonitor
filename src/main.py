@@ -18,8 +18,9 @@ app = webapp2.WSGIApplication([
 ('/', MainPage),
 ('/configitem', configmanager.handlers.MainPage),
 ('/fetch', webservice.handlers.FetchPage),
-('/api/fetch/request', webservice.handlersapi.FetchRequest),
-('/api/fetch/response', webservice.handlersapi.FetchResponse),
+('/api/fetch', webservice.handlersapi.FetchRequest),
+('/fetch/batch', webservice.handlersapi.BatchFetchRequest),
+('/fetch/single', webservice.handlersapi.SingleFetchResponse),
 ],
                               debug=True)
 
