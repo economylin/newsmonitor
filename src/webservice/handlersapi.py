@@ -38,10 +38,11 @@ class FetchRequest(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write('Request is accepted.')
 
+
 class BatchFetchRequest(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
-        items = data.get['items']
+        items = data['items']
         for item in items:
             rawdata = json.dumps(item)
             taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/single')
