@@ -1,6 +1,7 @@
 import json
 import logging
 from md5 import md5
+import time
 import urllib2
 
 from google.appengine.api import taskqueue
@@ -10,6 +11,8 @@ import webapp2
 from contentdetector import ContentFetcher, HtmlContentParser
 
 _URL_TIMEOUT = 30
+_FETCH_TRYCOUNT = 3
+_CALLBACK_TRYCOUNT = 3
 
 def _calculateHash(items):
     lines = []
@@ -82,6 +85,7 @@ class BatchFetchRequest(webapp2.RequestHandler):
 
 
 class SingleFetchResponse(webapp2.RequestHandler):
+
     def post(self):
         requestdata = json.loads(self.request.body)
 
@@ -91,9 +95,16 @@ class SingleFetchResponse(webapp2.RequestHandler):
         slug = requestdata['slug']
         fetchurl = requestdata['fetchurl']
         if not content:
-            message = 'Failed to fetch content form %s for %s.' % (fetchurl, slug, )
+            triedcount = requestdata.get('triedcount', 0) + 1
+            leftcount = _FETCH_TRYCOUNT - triedcount
+            message = 'Failed to fetch content form %s for %s, lefted: %s.' % (
+                        fetchurl, slug, leftcount, )
             logging.error(message)
             self.response.out.write(message)
+            if leftcount > 0:
+                requestdata['triedcount'] = triedcount
+                taskqueue.add(queue_name="default", payload=json.dumps(requestdata),
+                            url='/fetch/single')
             return
 
         selector = requestdata['selector']
@@ -121,12 +132,21 @@ class SingleFetchResponse(webapp2.RequestHandler):
                     'fetchhash': fetchhash,
                 },
         }
-        if not _pushItemsBack(callbackurl, responseData):
-            message = 'Failed to push items back for %s to %s.' % (
-                                  slug, callbackurl)
-            logging.error(message)
+        doCallback = False
+        for i in range(_CALLBACK_TRYCOUNT):
+            if _pushItemsBack(callbackurl, responseData):
+                doCallback = True
+                break
+            leftcount = _CALLBACK_TRYCOUNT - 1 - i
+            message = 'Failed to push items back for %s to %s, try count left: %s.' % (
+                              slug, callbackurl, leftcount)
+            logging.info(message)
             self.response.out.write(message)
+            if leftcount > 0:
+                time.sleep(2)
+        if not doCallback:
             return
+
         message = 'Push items back for %s to %s.' % (slug, callbackurl)
         logging.info(message)
         self.response.out.write(message)
