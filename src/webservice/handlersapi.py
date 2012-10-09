@@ -36,13 +36,13 @@ def _calculateHash(items):
         logging.exception('items: %s.' % (items, ))
     return value
 
-def _fetchContent(requestdata):
-    fetchurl = requestdata['fetchurl']
-    preventcache = requestdata.get('preventcache')
-    useragent = requestdata.get('useragent')
-    cookie = requestdata.get('cookie')
-    timeout = requestdata.get('timeout')
-    encoding = requestdata.get('encoding')
+def _fetchContent(data):
+    fetchurl = data['fetchurl']
+    preventcache = data.get('preventcache')
+    useragent = data.get('useragent')
+    cookie = data.get('cookie')
+    timeout = data.get('timeout')
+    encoding = data.get('encoding')
     fetcher = ContentFetcher(fetchurl, preventcache=preventcache,
                          useragent=useragent, cookie=cookie,
                          timeout=timeout, encoding=encoding)
@@ -76,8 +76,10 @@ class FetchRequest(webapp2.RequestHandler):
 class BatchFetchRequest(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
+        callbackurl = data['callbackurl']
         items = data['items']
         for item in items:
+            item['callbackurl'] = callbackurl
             rawdata = json.dumps(item)
             taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/single')
         self.response.headers['Content-Type'] = 'text/plain'
@@ -87,27 +89,26 @@ class BatchFetchRequest(webapp2.RequestHandler):
 class SingleFetchResponse(webapp2.RequestHandler):
 
     def post(self):
-        requestdata = json.loads(self.request.body)
-
         self.response.headers['Content-Type'] = 'text/plain'
-
-        content = _fetchContent(requestdata)
-        slug = requestdata['slug']
-        fetchurl = requestdata['fetchurl']
+        data = json.loads(self.request.body)
+        monitorRequest = data['request']
+        content = _fetchContent(monitorRequest)
+        slug = monitorRequest['slug']
+        fetchurl = monitorRequest['fetchurl']
         if not content:
-            triedcount = requestdata.get('triedcount', 0) + 1
+            triedcount = data.get('triedcount', 0) + 1
             leftcount = _FETCH_TRYCOUNT - triedcount
             message = 'Failed to fetch content form %s for %s, lefted: %s.' % (
                         fetchurl, slug, leftcount, )
             logging.error(message)
             self.response.out.write(message)
             if leftcount > 0:
-                requestdata['triedcount'] = triedcount
-                taskqueue.add(queue_name="default", payload=json.dumps(requestdata),
+                data['triedcount'] = triedcount
+                taskqueue.add(queue_name="default", payload=json.dumps(data),
                             url='/fetch/single')
             return
 
-        selector = requestdata['selector']
+        selector = monitorRequest['selector']
         items = _parseItems(fetchurl, selector, content)
         if not items:
             message = 'Failed to parse items from %s for %s by %s.' % (
@@ -119,14 +120,14 @@ class SingleFetchResponse(webapp2.RequestHandler):
         logging.info(message)
         self.response.out.write(message)
 
-        oldhash = requestdata['fetchhash']
+        oldhash = monitorRequest['fetchhash']
         fetchhash = _calculateHash(items)
         if oldhash == fetchhash:
             return
 
-        callbackurl = requestdata['callback']
+        callbackurl = data['callbackurl']
         responseData = {
-                'request': requestdata,
+                'origin': data['origin'],
                 'result': {
                     'items': items,
                     'fetchhash': fetchhash,
