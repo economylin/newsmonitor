@@ -9,7 +9,8 @@ from commonutil import dateutil
 import globalconfig
 
 class ContentFetcher(object):
-    def __init__(self, url, preventcache=False, useragent=None, cookie=None, timeout=None, encoding=None):
+    def __init__(self, url, preventcache=False, useragent=None, cookie=None,
+              timeout=None, encoding=None, proxy=None):
         self.url = url
         self.preventcache = preventcache
         self.useragent = globalconfig.getUserAgent(useragent)
@@ -20,6 +21,7 @@ class ContentFetcher(object):
         else:
             self.timeout = globalconfig.getFetchTimeout()
         self.encoding = encoding
+        self.proxy = proxy
 
     def authenticate(self, req):        
         pass
@@ -41,7 +43,12 @@ class ContentFetcher(object):
                 req.add_header('User-agent', self.useragent)
             if self.cookie:
                 req.add_header('Cookie', self.cookie)
-            res = urllib2.urlopen(req, timeout=self.timeout)
+            if self.proxy:
+                handler = urllib2.ProxyHandler({'http': self.proxy})
+            else:
+                handler = urllib2.HTTPHandler()
+            opener = urllib2.build_opener(handler)
+            res = opener.open(req, timeout=self.timeout)
             content = res.read()
             res.close()
             encodingUsed = self.encoding

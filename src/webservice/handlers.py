@@ -23,6 +23,7 @@ class FetchPage(webapp2.RequestHandler):
         url = self.request.get('url')
         preventcache = not not self.request.get('preventcache')
         useragent = self.request.get('useragent')
+        proxy = self.request.get('proxy')
         cookie = self.request.get('cookie')
         timeout = self.request.get('timeout')
         if timeout:
@@ -38,7 +39,7 @@ class FetchPage(webapp2.RequestHandler):
         if not content and url:
             fetcher = ContentFetcher(url, preventcache=preventcache,
                            useragent=useragent, cookie=cookie,
-                           timeout=timeout, encoding=encoding
+                           timeout=timeout, encoding=encoding, proxy=proxy
                          )
             fetchurl, parsedencoding, content = fetcher.fetch()
         if content and selector:
@@ -67,6 +68,7 @@ class FetchPage(webapp2.RequestHandler):
             'cookie': cookie,
             'timeout': timeout,
             'encoding': encoding,
+            'proxy': proxy,
             'content': content,
             'fetchurl': fetchurl,
             'parsedencoding': parsedencoding,
