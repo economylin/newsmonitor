@@ -5,22 +5,25 @@
 </head>
   <body>
     <form action="/fetch" method="POST">
-    Slug: <input type="text" name="slug" value="{{ slug }}" size="10"/>
-    Name: <input type="text" name="name" value="{{ name }}" size="10"/>
-    <br/>URL: <input type="text" name="url" value="{{ url }}" size="80"/>
-    Prevent cache: <input type="checkbox" name="preventcache" {% if preventcache %} checked {% endif %}/>
-    <br/>User agent: <input type="text" name="useragent" size="80" value="{{ useragent }}"/>
-    <br/>Proxy: <input type="text" name="proxy" size="80" value="{{ proxy }}"/>
-    <br/>Cookie: <input type="text" name="cookie" size="80" value="{{ cookie }}"/>
-    <br/>Timeout: <input type="text" name="timeout" value="{{ timeout }}" size="10"/>
-    Encoding: <input type="text" name="encoding" value="{{ encoding }}" size="10"/>
-    <br/><input type="text" name="fetchurl" value="{{ fetchurl }}" size="80" readonly="True"/>
+    Slug: <input type="text" name="slug" value="{{ newssource.slug }}" size="30"/>
+    Name: <input type="text" name="name" value="{{ newssource.name }}" size="30"/>
+    Active: <input type="checkbox" name="active" {% if newssource.active %} checked {% endif %}/>
+    <br/>URL: <input type="text" name="fetchurl" value="{{ newssource.fetchurl }}" size="80"/>
+    Prevent cache: <input type="checkbox" name="preventcache" {% if newssource.preventcache %} checked {% endif %}/>
+    <br/>User agent: <input type="text" name="useragent" size="80" value="{{ newssource.useragent }}"/>
+    <br/>Proxy: <input type="text" name="proxy" size="80" value="{{ newssource.proxy }}"/>
+    <br/>Cookie: <input type="text" name="cookie" size="80" value="{{ newssource.cookie }}"/>
+    <br/>Timeout: <input type="text" name="timeout" value="{{ newssource.timeout }}" size="10"/>
+    Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
+    <br/><input type="text" name="parsedurl" value="{{ parsedurl }}" size="80" readonly="True"/>
     <input type="text" name="parsedencoding" value="{{ parsedencoding }}" size="10" readonly="True"/>
     <br/><textarea name="content" rows="10" cols="130">{{ content }}</textarea>
-    <br/>Selector: <input type="text" name="selector" value="{{ selector }}" size="80"/>
-    <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/><input type="submit" value="Submit" />
+    <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="80"/>
+    <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
+    <input name="action" type="submit" value="Submit" />
+    <br/><textarea name="jsonstr" rows="3" cols="130">{{ jsonstr }}</textarea>
+    <input type="submit" name="action" value="JSON" />
     </form>
-    <br/><textarea rows="3" cols="130">{{ newscenter }}</textarea>
     <br/>{{ items }}
     {% for item in items %}
         <br/><br/><a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
