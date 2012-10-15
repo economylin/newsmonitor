@@ -49,6 +49,11 @@ class FetchPage(webapp2.RequestHandler):
         parsedurl = self.request.get('parsedurl')
         content = self.request.get('content')
         items = []
+
+        if parsedurl and not parsedurl.startswith(fetchurl):
+            newssource['selector'] = ''
+            content = ''
+
         if (not content or not selector) and fetchurl:
             fetcher = ContentFetcher(fetchurl, preventcache=newssource['preventcache'],
                            useragent=newssource['useragent'], proxy=newssource['proxy'],
@@ -58,7 +63,7 @@ class FetchPage(webapp2.RequestHandler):
             parsedurl, parsedencoding, content = fetcher.fetch()
         if content and selector:
             parser = HtmlContentParser()
-            items = parser.parse(selector, selector, content)
+            items = parser.parse(fetchurl, selector + '@', content)
         templateValues = {
             'newssource': newssource,
             'content': content,
