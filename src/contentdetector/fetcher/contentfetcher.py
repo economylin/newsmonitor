@@ -5,23 +5,17 @@ import urllib2
 
 import chardet
 
-from commonutil import dateutil
 import globalconfig
 
 class ContentFetcher(object):
-    def __init__(self, url, preventcache=False, useragent=None, cookie=None,
-              timeout=None, encoding=None, proxy=None):
+    def __init__(self, url, cookie=None, encoding=None, tried=0):
         self.url = url
-        self.preventcache = preventcache
-        self.useragent = globalconfig.getUserAgent(useragent)
         self.cookie = cookie
-
-        if timeout:
-            self.timeout = timeout
-        else:
-            self.timeout = globalconfig.getFetchTimeout()
         self.encoding = encoding
-        self.proxy = proxy
+
+        self.useragent = globalconfig.getUserAgent()
+        defaultTimeout = globalconfig.getFetchTimeout()
+        self.timeout = self.timeout = defaultTimeout * (tried + 1)
 
     def authenticate(self, req):        
         pass
@@ -31,22 +25,13 @@ class ContentFetcher(object):
         encodingUsed = None
         try:
             fetchUrl = self.url
-            if self.preventcache:
-                if fetchUrl.find('?') > 0:
-                    fetchUrl += '&'
-                else:
-                    fetchUrl += '?'
-                fetchUrl += '_preventCache=' + str(dateutil.getIntByMinitue())
             req = urllib2.Request(fetchUrl)
             self.authenticate(req)
             if self.useragent:
                 req.add_header('User-agent', self.useragent)
             if self.cookie:
                 req.add_header('Cookie', self.cookie)
-            if self.proxy:
-                handler = urllib2.ProxyHandler({'http': self.proxy})
-            else:
-                handler = urllib2.HTTPHandler()
+            handler = urllib2.HTTPHandler()
             opener = urllib2.build_opener(handler)
             res = opener.open(req, timeout=self.timeout)
             content = res.read()
@@ -67,8 +52,8 @@ class ContentFetcher(object):
             return fetchUrl, encodingUsed, ''
 
 class BasicAuthContentFetcher(ContentFetcher):
-    def __init__(self, url, username, password, encoding=None, preventCache=False):
-        super(BasicAuthContentFetcher, self).__init__(url, encoding=encoding, preventCache=preventCache)
+    def __init__(self, url, username, password, encoding=None):
+        super(BasicAuthContentFetcher, self).__init__(url, encoding=encoding)
         self.username = username
         self.password = password
 

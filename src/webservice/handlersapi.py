@@ -36,16 +36,11 @@ def _calculateHash(items):
         logging.exception('items: %s.' % (items, ))
     return value
 
-def _fetchContent(data):
+def _fetchContent(data, triedcount):
     fetchurl = data['fetchurl']
-    preventcache = data.get('preventcache')
-    useragent = data.get('useragent')
     cookie = data.get('cookie')
-    timeout = data.get('timeout')
     encoding = data.get('encoding')
-    fetcher = ContentFetcher(fetchurl, preventcache=preventcache,
-                         useragent=useragent, cookie=cookie,
-                         timeout=timeout, encoding=encoding)
+    fetcher = ContentFetcher(fetchurl, cookie=cookie, encoding=encoding, tried=triedcount)
     _, _, content = fetcher.fetch()
     return content
 
@@ -91,12 +86,13 @@ class SingleFetchResponse(webapp2.RequestHandler):
     def post(self):
         self.response.headers['Content-Type'] = 'text/plain'
         data = json.loads(self.request.body)
+        triedcount = data.get('triedcount', 0)
         monitorRequest = data['request']
-        content = _fetchContent(monitorRequest)
+        content = _fetchContent(monitorRequest, triedcount)
         slug = monitorRequest['slug']
         fetchurl = monitorRequest['fetchurl']
         if not content:
-            triedcount = data.get('triedcount', 0) + 1
+            triedcount += 1
             leftcount = _FETCH_TRYCOUNT - triedcount
             message = 'Failed to fetch content form %s for %s, lefted: %s.' % (
                         fetchurl, slug, leftcount, )

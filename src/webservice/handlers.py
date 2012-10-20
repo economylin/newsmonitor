@@ -32,13 +32,7 @@ class FetchPage(webapp2.RequestHandler):
             newssource['slug'] = self.request.get('slug')
             newssource['name'] = self.request.get('name')
             newssource['fetchurl'] = self.request.get('fetchurl')
-            newssource['preventcache'] = bool(self.request.get('preventcache'))
-            newssource['useragent'] = self.request.get('useragent')
-            newssource['proxy'] = self.request.get('proxy')
             newssource['cookie'] = self.request.get('cookie')
-            timeout = self.request.get('timeout')
-            if timeout:
-                newssource['timeout'] = int(timeout)
             newssource['encoding'] = self.request.get('encoding')
             jsonstr = json.dumps(newssource)
             parsedencoding = self.request.get('parsedencoding')
@@ -57,11 +51,10 @@ class FetchPage(webapp2.RequestHandler):
         selector = newssource.get('selector')
         fetchurl = newssource.get('fetchurl')
 
+        tried = 2 # the max try count is 3
         if (not content or not selector) and fetchurl:
-            fetcher = ContentFetcher(fetchurl, preventcache=newssource.get('preventcache'),
-                           useragent=newssource.get('useragent'), proxy=newssource.get('proxy'),
-                           cookie=newssource.get('cookie'),
-                           timeout=newssource.get('timeout'), encoding=newssource.get('encoding')
+            fetcher = ContentFetcher(fetchurl, cookie=newssource.get('cookie'),
+                            encoding=newssource.get('encoding'), tried=tried
                          )
             parsedurl, parsedencoding, content = fetcher.fetch()
         if content and selector:

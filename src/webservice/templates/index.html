@@ -9,11 +9,7 @@
     Name: <input type="text" name="name" value="{{ newssource.name }}" size="30"/>
     Active: <input type="checkbox" name="active" {% if newssource.active %} checked {% endif %}/>
     <br/>URL: <input type="text" name="fetchurl" value="{{ newssource.fetchurl }}" size="80"/>
-    Prevent cache: <input type="checkbox" name="preventcache" {% if newssource.preventcache %} checked {% endif %}/>
-    <br/>User agent: <input type="text" name="useragent" size="80" value="{{ newssource.useragent }}"/>
-    <br/>Proxy: <input type="text" name="proxy" size="80" value="{{ newssource.proxy }}"/>
     <br/>Cookie: <input type="text" name="cookie" size="80" value="{{ newssource.cookie }}"/>
-    <br/>Timeout: <input type="text" name="timeout" value="{{ newssource.timeout }}" size="10"/>
     Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
     <br/><input type="text" name="parsedurl" value="{{ parsedurl }}" size="80" readonly="True"/>
     <input type="text" name="parsedencoding" value="{{ parsedencoding }}" size="10" readonly="True"/>
