@@ -6,6 +6,7 @@ import webapp2
 
 from contentdetector import ContentFetcher, HtmlContentParser
 
+_DEFAULT_NEWSSOURCE = {'active': True}
 class FetchPage(webapp2.RequestHandler):
     def _render(self, templateValues):
         self.response.headers['Content-Type'] = 'text/html'
@@ -14,7 +15,7 @@ class FetchPage(webapp2.RequestHandler):
 
     def get(self):
         templateValues = {
-            'newssource': {'active': True},
+            'newssource': _DEFAULT_NEWSSOURCE,
         }
         self._render(templateValues)
 
@@ -22,7 +23,10 @@ class FetchPage(webapp2.RequestHandler):
         action = self.request.get('action')
         if action == 'JSON':
             jsonstr = self.request.get('jsonstr')
-            newssource = json.loads(jsonstr)
+            if jsonstr:
+                newssource = json.loads(jsonstr)
+            else:
+                newssource = _DEFAULT_NEWSSOURCE
             parsedencoding = ''
             parsedurl = ''
             content = ''
@@ -34,7 +38,6 @@ class FetchPage(webapp2.RequestHandler):
             newssource['fetchurl'] = self.request.get('fetchurl')
             newssource['cookie'] = self.request.get('cookie')
             newssource['encoding'] = self.request.get('encoding')
-            jsonstr = json.dumps(newssource)
             parsedencoding = self.request.get('parsedencoding')
             parsedurl = self.request.get('parsedurl')
             if parsedurl and not parsedurl.startswith(newssource.get('fetchurl')):
@@ -43,6 +46,7 @@ class FetchPage(webapp2.RequestHandler):
             else:
                 newssource['selector'] = self.request.get('selector')
                 content = self.request.get('content')
+            jsonstr = json.dumps(newssource)
 
         if 'active' not in newssource:
             newssource['active'] = True

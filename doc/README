@@ -4,6 +4,6 @@ python $HOME/bin/google_appengine/appcfg.py update $HOME/workspace-gae/newsmonit
 
 # Upload by GoAgent uploader
 export uploaddir=$HOME/workspace-gae/newsmonitor/src
-export PYTHONPATH="$HOME/bin/goagent-goagent-1aedcc6/local:$PYTHONPATH"
-python /home/hyman/bin/goagent-goagent-1aedcc6/server/uploader/appcfg_news.py
+export PYTHONPATH="$HOME/bin/goagent/local:$PYTHONPATH"
+python /home/hyman/bin/goagent/server/uploader/appcfg_news.py
 
