@@ -11,6 +11,7 @@
     <br/>URL: <input type="text" name="fetchurl" value="{{ newssource.fetchurl }}" size="80"/>
     <br/>Cookie: <input type="text" name="cookie" size="80" value="{{ newssource.cookie }}"/>
     Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
+    <br/>Header:<br/><textarea name="httpheader" rows="3" cols="130">{{ httpheader }}</textarea>
     <br/><input type="text" name="parsedurl" value="{{ parsedurl }}" size="80" readonly="True"/>
     <input type="text" name="parsedencoding" value="{{ parsedencoding }}" size="10" readonly="True"/>
     <br/><textarea name="content" rows="10" cols="130">{{ content }}</textarea>

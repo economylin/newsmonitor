@@ -39,8 +39,10 @@ def _calculateHash(items):
 def _fetchContent(data, triedcount):
     fetchurl = data['fetchurl']
     cookie = data.get('cookie')
+    header = data.get('header')
     encoding = data.get('encoding')
-    fetcher = ContentFetcher(fetchurl, cookie=cookie, encoding=encoding, tried=triedcount)
+    fetcher = ContentFetcher(fetchurl, cookie=cookie, header=header,
+                                encoding=encoding, tried=triedcount)
     _, _, content = fetcher.fetch()
     return content
 

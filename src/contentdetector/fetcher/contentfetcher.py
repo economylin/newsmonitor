@@ -8,8 +8,9 @@ import chardet
 import globalconfig
 
 class ContentFetcher(object):
-    def __init__(self, url, cookie=None, encoding=None, tried=0):
+    def __init__(self, url, cookie=None, header=None, encoding=None, tried=0):
         self.url = url
+        self.header = header if header else {}
         self.cookie = cookie
         self.encoding = encoding
 
@@ -31,6 +32,8 @@ class ContentFetcher(object):
                 req.add_header('User-agent', self.useragent)
             if self.cookie:
                 req.add_header('Cookie', self.cookie)
+            for key, value in self.header.iteritems():
+                req.add_header(key, value)
             handler = urllib2.HTTPHandler()
             opener = urllib2.build_opener(handler)
             res = opener.open(req, timeout=self.timeout)
@@ -41,10 +44,9 @@ class ContentFetcher(object):
             	detectResult = chardet.detect(content)
                 if detectResult:
                     encodingUsed = detectResult['encoding']
-                else:
+                if not encodingUsed:
                     encodingUsed = 'utf-8'
                     logging.error('chardet failed to detect encoding from %s.' % (fetchUrl,))
-
             return fetchUrl, encodingUsed, unicode(content, encodingUsed,'ignore')
         except Exception, err:
             response = 'Error on fetching data from %s:%s.' % (self.url, err)

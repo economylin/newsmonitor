@@ -30,12 +30,16 @@ class FetchPage(webapp2.RequestHandler):
             parsedencoding = ''
             parsedurl = ''
             content = ''
+            httpheader = ''
         else:
             newssource = {}
             newssource['active'] = bool(self.request.get('active'))
             newssource['slug'] = self.request.get('slug')
             newssource['name'] = self.request.get('name')
             newssource['fetchurl'] = self.request.get('fetchurl')
+            httpheader = self.request.get('httpheader')
+            if httpheader:
+                newssource['header'] = json.loads(httpheader)
             newssource['cookie'] = self.request.get('cookie')
             newssource['encoding'] = self.request.get('encoding')
             parsedencoding = self.request.get('parsedencoding')
@@ -58,6 +62,7 @@ class FetchPage(webapp2.RequestHandler):
         tried = 2 # the max try count is 3
         if (not content or not selector) and fetchurl:
             fetcher = ContentFetcher(fetchurl, cookie=newssource.get('cookie'),
+                            header=newssource.get('header'),
                             encoding=newssource.get('encoding'), tried=tried
                          )
             parsedurl, parsedencoding, content = fetcher.fetch()
@@ -66,6 +71,7 @@ class FetchPage(webapp2.RequestHandler):
             items = parser.parse(fetchurl, selector + '@', content)
         templateValues = {
             'newssource': newssource,
+            'httpheader': httpheader,
             'content': content,
             'parsedencoding': parsedencoding,
             'parsedurl': parsedurl,
