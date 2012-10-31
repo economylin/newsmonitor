@@ -4,13 +4,13 @@ LIBRARY_SRC=$HOME/workspace-gae/newsmonitor/src/library
 
 mkdir $LIBRARY_SRC
 
-ln -s $UTIL_PROJECT_SRC/commonutil $LIBRARY_SRC/commonutil
 ln -s $UTIL_PROJECT_SRC/chardet $LIBRARY_SRC/chardet
 
 ln -s $UTIL_PROJECT_SRC/cssselect $LIBRARY_SRC/cssselect
 ln -s $UTIL_PROJECT_SRC/pyquery $LIBRARY_SRC/pyquery
 
 
-ln -s $FUNCTION_PROJECT_SRC/configmanager $LIBRARY_SRC/configmanager
 ln -s $UTIL_PROJECT_SRC/jsonpickle $LIBRARY_SRC/jsonpickle
+ln -s $FUNCTION_PROJECT_SRC/commonutil $LIBRARY_SRC/commonutil
+ln -s $FUNCTION_PROJECT_SRC/configmanager $LIBRARY_SRC/configmanager
 

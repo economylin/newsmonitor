@@ -4,6 +4,7 @@ import os
 from google.appengine.ext.webapp import template
 import webapp2
 
+from commonutil import jsonutil
 from contentdetector import ContentFetcher, HtmlContentParser
 
 _DEFAULT_NEWSSOURCE = {'active': True}
@@ -50,7 +51,7 @@ class FetchPage(webapp2.RequestHandler):
             else:
                 newssource['selector'] = self.request.get('selector')
                 content = self.request.get('content')
-            jsonstr = json.dumps(newssource)
+            jsonstr = jsonutil.getReadableString(newssource)
 
         if 'active' not in newssource:
             newssource['active'] = True
