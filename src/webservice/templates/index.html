@@ -9,7 +9,6 @@
     Name: <input type="text" name="name" value="{{ newssource.name }}" size="30"/>
     Active: <input type="checkbox" name="active" {% if newssource.active %} checked {% endif %}/>
     <br/>URL: <input type="text" name="fetchurl" value="{{ newssource.fetchurl }}" size="80"/>
-    <br/>Cookie: <input type="text" name="cookie" size="80" value="{{ newssource.cookie }}"/>
     Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
     <br/>Header:<br/><textarea name="httpheader" rows="3" cols="130">{{ httpheader }}</textarea>
     <br/><input type="text" name="parsedurl" value="{{ parsedurl }}" size="80" readonly="True"/>
@@ -18,6 +17,7 @@
     <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="80"/>
     <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
     <input name="action" type="submit" value="Submit" />
+    <br/>Tags: <input type="text" name="tags" size="80" value="{{ newssource.tags }}"/>
     <br/><br/><textarea name="jsonstr" rows="9" cols="130">{{ jsonstr }}</textarea>
     <input type="submit" name="action" value="JSON" />
     </form>

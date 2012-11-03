@@ -41,8 +41,8 @@ class FetchPage(webapp2.RequestHandler):
             httpheader = self.request.get('httpheader')
             if httpheader:
                 newssource['header'] = json.loads(httpheader)
-            newssource['cookie'] = self.request.get('cookie')
             newssource['encoding'] = self.request.get('encoding')
+            newssource['tags'] = self.request.get('tags')
             parsedencoding = self.request.get('parsedencoding')
             parsedurl = self.request.get('parsedurl')
             if parsedurl and not parsedurl.startswith(newssource.get('fetchurl')):
@@ -62,7 +62,7 @@ class FetchPage(webapp2.RequestHandler):
 
         tried = 2 # the max try count is 3
         if (not content or not selector) and fetchurl:
-            fetcher = ContentFetcher(fetchurl, cookie=newssource.get('cookie'),
+            fetcher = ContentFetcher(fetchurl,
                             header=newssource.get('header'),
                             encoding=newssource.get('encoding'), tried=tried
                          )
