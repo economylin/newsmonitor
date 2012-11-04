@@ -8,7 +8,8 @@ from google.appengine.api import taskqueue
 
 import webapp2
 
-from contentdetector import ContentFetcher, HtmlContentParser
+from contentfetcher import ContentFetcher
+from contentdetector import HtmlContentParser
 
 _URL_TIMEOUT = 30
 _FETCH_TRYCOUNT = 3

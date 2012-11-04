@@ -5,7 +5,8 @@ from google.appengine.ext.webapp import template
 import webapp2
 
 from commonutil import jsonutil
-from contentdetector import ContentFetcher, HtmlContentParser
+from contentfetcher import ContentFetcher
+from contentdetector import HtmlContentParser
 
 _DEFAULT_NEWSSOURCE = {'active': True}
 class FetchPage(webapp2.RequestHandler):

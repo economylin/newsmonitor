@@ -2,20 +2,36 @@ http://localhost:8081/api/fetch
 http://localhost:8081/fetch/batch
 {
 "items": [{
-"slug": "qq",
-"fetchurl": "http://view.news.qq.com/",
-"selector": ".left1&.left1pic a, .left1img img",
-"fetchhash": null,
-"callback": "http://localhost:8080/headline/fetch/response"
-}]
-}
-
-http://localhost:8081/fetch/single
+"request":
 {
 "slug": "qq",
 "fetchurl": "http://view.news.qq.com/",
 "selector": ".left1&.left1pic a, .left1img img",
-"fetchhash": null,
-"callback": "http://localhost:8080/headline/fetch/response"
+"fetchhash": null
+},
+"origin": {
+                    "scheduler": "scheduler1",
+                    "topic": "topic1",
+                    "source": "source1"
+}
+}],
+"callbackurl": "http://localhost:8080/headline/fetch/response"
+}
+
+http://localhost:8081/fetch/single
+{
+"request":
+{
+"slug": "qq",
+"fetchurl": "http://view.news.qq.com/",
+"selector": ".left1&.left1pic a, .left1img img",
+"fetchhash": null
+},
+"origin": {
+                    "scheduler": "scheduler1",
+                    "topic": "topic1",
+                    "source": "source1"
+},
+"callbackurl": "http://localhost:8080/headline/fetch/response"
 }
 
