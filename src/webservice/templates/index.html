@@ -15,13 +15,19 @@
     <input type="text" name="parsedencoding" value="{{ parsedencoding }}" size="10" readonly="True"/>
     <br/><textarea name="content" rows="10" cols="130">{{ content }}</textarea>
     <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="80"/>
-    <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
+    <br/>Keyword: <input type="text" name="keyword" value="{{ keyword }}" size="80"/>
+    <br/><input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
     <input name="action" type="submit" value="Submit" />
     <br/>Tags: <input type="text" name="tags" size="80" value="{{ newssource.tags }}"/>
     <br/><br/><textarea name="jsonstr" rows="9" cols="130">{{ jsonstr }}</textarea>
     <input type="submit" name="action" value="JSON" />
     </form>
-    <br/>{{ items }}
+    <br/>
+    {% for link in links %}
+        <br/><br/>{{ link.path }}
+        <br/>{{ link.title }}: {{ link.url }}
+    {% endfor %}
+    <br/>
     {% for item in items %}
         <br/><br/><a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
         {% if item.imgurl %}<img src="{{ item.imgurl }}" width="{{ item.imgwidth }}" height="{{ item.imgheight }}"/>{% endif %}

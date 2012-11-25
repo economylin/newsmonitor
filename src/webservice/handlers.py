@@ -7,6 +7,7 @@ import webapp2
 from commonutil import jsonutil
 from contentfetcher import ContentFetcher
 from contentdetector import HtmlContentParser
+from contentdetector import linkdetector
 
 _DEFAULT_NEWSSOURCE = {'active': True}
 class FetchPage(webapp2.RequestHandler):
@@ -23,6 +24,7 @@ class FetchPage(webapp2.RequestHandler):
 
     def post(self):
         action = self.request.get('action')
+        keyword = self.request.get('keyword')
         if action == 'JSON':
             jsonstr = self.request.get('jsonstr')
             if jsonstr:
@@ -58,6 +60,7 @@ class FetchPage(webapp2.RequestHandler):
             newssource['active'] = True
 
         items = []
+        links = []
         selector = newssource.get('selector')
         fetchurl = newssource.get('fetchurl')
 
@@ -68,15 +71,24 @@ class FetchPage(webapp2.RequestHandler):
                             encoding=newssource.get('encoding'), tried=tried
                          )
             parsedurl, parsedencoding, content = fetcher.fetch()
-        if content and selector:
-            parser = HtmlContentParser()
-            items = parser.parse(fetchurl, selector + '@', content)
+        if content:
+            if selector:
+                parser = HtmlContentParser()
+                items = parser.parse(fetchurl, selector + '@', content)
+            else:
+                links = linkdetector.detect(content, keyword)
+
+        if newssource.get('header'):
+            httpheader = jsonutil.getReadableString(newssource['header'])
+
         templateValues = {
             'newssource': newssource,
             'httpheader': httpheader,
             'content': content,
             'parsedencoding': parsedencoding,
             'parsedurl': parsedurl,
+            'keyword': keyword,
+            'links': links,
             'items': items,
             'jsonstr': jsonstr,
         }
