@@ -4,7 +4,7 @@
 <title>Fetch page</title>
 </head>
   <body>
-    <form action="/fetch" method="POST">
+    <form action="/fetch/" method="POST">
     Slug: <input type="text" name="slug" value="{{ newssource.slug }}" size="30"/>
     Name: <input type="text" name="name" value="{{ newssource.name }}" size="30"/>
     Active: <input type="checkbox" name="active" {% if newssource.active %} checked {% endif %}/>

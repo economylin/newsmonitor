@@ -1,6 +1,5 @@
 import json
 import logging
-from md5 import md5
 import time
 import urllib2
 
@@ -8,6 +7,7 @@ from google.appengine.api import taskqueue
 
 import webapp2
 
+from commonutil import stringutil
 from contentfetcher import ContentFetcher
 from contentdetector import HtmlContentParser
 
@@ -19,23 +19,13 @@ def _calculateHash(items):
     lines = []
     for item in items:
         url = item.get('url')
-        title = item.get('title')
         if url:
-            if type(url) == unicode:
-                lines.append(url.encode('utf-8','ignore'))
-            else:
-                lines.append(url)
-        elif title:
-            if type(title) == unicode:
-                lines.append(title.encode('utf-8','ignore'))
-            else:
+            lines.append(url)
+        else:
+            title = item.get('title')
+            if title:
                 lines.append(title)
-    value = ''
-    try:
-        value = md5(''.join(lines)).hexdigest()
-    except:
-        logging.exception('items: %s.' % (items, ))
-    return value
+    return stringutil.calculateHash(lines)
 
 def _fetchContent(data, triedcount):
     fetchurl = data['fetchurl']
@@ -65,7 +55,7 @@ def _pushItemsBack(callbackurl, responseData):
 class FetchRequest(webapp2.RequestHandler):
     def post(self):
         rawdata = self.request.body
-        taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/batch')
+        taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/batch/')
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write('Request is accepted.')
 
@@ -78,7 +68,7 @@ class BatchFetchRequest(webapp2.RequestHandler):
         for item in items:
             item['callbackurl'] = callbackurl
             rawdata = json.dumps(item)
-            taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/single')
+            taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/single/')
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write('Put fetch task into queue.')
 

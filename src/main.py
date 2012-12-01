@@ -16,11 +16,11 @@ class MainPage(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
 ('/', MainPage),
-('/configitem', configmanager.handlers.MainPage),
-('/fetch', webservice.handlers.FetchPage),
-('/api/fetch', webservice.handlersapi.FetchRequest),
-('/fetch/batch', webservice.handlersapi.BatchFetchRequest),
-('/fetch/single', webservice.handlersapi.SingleFetchResponse),
+('/configitem/', configmanager.handlers.MainPage),
+('/fetch/', webservice.handlers.FetchPage),
+('/api/fetch/', webservice.handlersapi.FetchRequest),
+('/fetch/batch/', webservice.handlersapi.BatchFetchRequest),
+('/fetch/single/', webservice.handlersapi.SingleFetchResponse),
 ],
                               debug=True)
 
