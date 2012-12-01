@@ -93,7 +93,7 @@ class SingleFetchResponse(webapp2.RequestHandler):
             if leftcount > 0:
                 data['triedcount'] = triedcount
                 taskqueue.add(queue_name="default", payload=json.dumps(data),
-                            url='/fetch/single')
+                            url='/fetch/single/')
             return
 
         selector = monitorRequest['selector']
