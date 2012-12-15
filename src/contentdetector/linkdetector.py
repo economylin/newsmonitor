@@ -4,10 +4,10 @@ def _getElementPath(element):
     result = [unicode(element.tag)]
     eid = element.get('id')
     if eid:
-        result.append('#' + eid)
+        result.append('<b>#' + eid + '</b>')
     eclass = element.get('class')
     if eclass:
-        result.append('.' + eclass.replace(' ', '+'))
+        result.append('<b>.' + eclass.replace(' ', '.') + '</b>')
     return ''.join(result)
 
 def _findLink(result, path, element, keyword):

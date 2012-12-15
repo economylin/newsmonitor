@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+import logging
 from urlparse import urljoin
+
 import lxml
 import lxml.html.clean
 import pyquery
+
 from contentparser import ContentParser
 
 class HtmlContentParser(ContentParser):
@@ -105,7 +108,10 @@ class HtmlContentParser(ContentParser):
         selectors = css.split('|')
         for selector in selectors:
             selector = selector.strip()
-            items.extend(self._getByCssSelector(htmlelement, selector))
+            try:
+                items.extend(self._getByCssSelector(htmlelement, selector))
+            except Exception:
+                logging.exception('Error happens using selector %s.' % (selector, ))
         if not returnmultiple:
             items = items[0:1]
         for index, item in enumerate(items):

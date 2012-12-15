@@ -24,7 +24,7 @@
     </form>
     <br/>
     {% for link in links %}
-        <br/><br/>{{ link.path }}
+        <br/><br/>{{ link.path|safe }}
         <br/>{{ link.title }}: {{ link.url }}
     {% endfor %}
     <br/>
