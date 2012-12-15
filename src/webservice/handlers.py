@@ -76,7 +76,7 @@ class FetchPage(webapp2.RequestHandler):
                 parser = HtmlContentParser()
                 if not selector.endswith('@'):
                     selector = selector + '@'
-                items = parser.parse(fetchurl, selector + '@', content)
+                items = parser.parse(fetchurl, selector, content)
             else:
                 links = linkdetector.detect(content, keyword)
 
