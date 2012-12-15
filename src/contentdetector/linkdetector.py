@@ -7,7 +7,7 @@ def _getElementPath(element):
         result.append('#' + eid)
     eclass = element.get('class')
     if eclass:
-        result.append('.' + eclass)
+        result.append('.' + eclass.replace(' ', '+'))
     return ''.join(result)
 
 def _findLink(result, path, element, keyword):
@@ -20,7 +20,7 @@ def _findLink(result, path, element, keyword):
                 url = childelement.get('href')
                 result.append(
                     {
-                        'path': ' -> '.join(childpath),
+                        'path': ' '.join(childpath),
                         'title': text,
                         'url': url,
                     }

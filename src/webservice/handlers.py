@@ -24,7 +24,7 @@ class FetchPage(webapp2.RequestHandler):
 
     def post(self):
         action = self.request.get('action')
-        keyword = self.request.get('keyword')
+        keyword = self.request.get('keyword').strip()
         if action == 'JSON':
             jsonstr = self.request.get('jsonstr')
             if jsonstr:
@@ -52,7 +52,7 @@ class FetchPage(webapp2.RequestHandler):
                 newssource['selector'] = ''
                 content = ''
             else:
-                newssource['selector'] = self.request.get('selector')
+                newssource['selector'] = self.request.get('selector').strip()
                 content = self.request.get('content')
             jsonstr = jsonutil.getReadableString(newssource)
 
@@ -74,6 +74,8 @@ class FetchPage(webapp2.RequestHandler):
         if content:
             if selector:
                 parser = HtmlContentParser()
+                if not selector.endswith('@'):
+                    selector = selector + '@'
                 items = parser.parse(fetchurl, selector + '@', content)
             else:
                 links = linkdetector.detect(content, keyword)
