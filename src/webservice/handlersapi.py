@@ -97,7 +97,8 @@ class SingleFetchResponse(webapp2.RequestHandler):
             return
 
         selector = monitorRequest['selector']
-        items = _parseItems(fetchurl, selector, content)
+        conditions = monitorRequest.get('conditions')
+        items = _parseItems(fetchurl, content, selector, conditions)
         if not items:
             message = 'Failed to parse items from %s for %s by %s.' % (
                                   fetchurl, slug, selector)

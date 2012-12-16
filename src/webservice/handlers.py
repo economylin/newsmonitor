@@ -48,12 +48,38 @@ class FetchPage(webapp2.RequestHandler):
             newssource['tags'] = self.request.get('tags')
             parsedencoding = self.request.get('parsedencoding')
             parsedurl = self.request.get('parsedurl')
-            if parsedurl and not parsedurl.startswith(newssource.get('fetchurl')):
-                newssource['selector'] = ''
-                content = ''
-            else:
-                newssource['selector'] = self.request.get('selector').strip()
-                content = self.request.get('content')
+            newssource['selector'] = self.request.get('selector').strip()
+
+            conditions = {}
+            excludelength = self.request.get('excludelength')
+            if excludelength:
+                excludelength = int(excludelength)
+                conditions['exclude'] = {'length': excludelength}
+            includeselector = self.request.get('includeselector').strip()
+            if includeselector:
+                conditions['include'] = {'selector': includeselector}
+            enoughall = bool(self.request.get('enoughall'))
+            if enoughall:
+                conditions['enough'] = {'all': enoughall}
+            urlselector = self.request.get('criterionurl').strip()
+            titleselector = self.request.get('criteriontitle').strip()
+            imgselector = self.request.get('criterionimage').strip()
+            contentselector = self.request.get('criterioncontent').strip()
+            linkselector = self.request.get('criterionlink').strip()
+            imagelinkselector = self.request.get('criterionimagelink').strip()
+            if urlselector or titleselector or imgselector or \
+                contentselector or linkselector or imgselector:
+                conditions['criterion'] = {
+                    'url': urlselector,
+                    'title': titleselector,
+                    'imgse': imgselector,
+                    'content': contentselector,
+                    'link': linkselector,
+                    'imagelink': imagelinkselector,
+                }
+            newssource['conditions'] = conditions
+
+            content = self.request.get('content')
             jsonstr = jsonutil.getReadableString(newssource)
 
         if 'active' not in newssource:
@@ -63,6 +89,7 @@ class FetchPage(webapp2.RequestHandler):
         links = []
         selector = newssource.get('selector')
         fetchurl = newssource.get('fetchurl')
+        conditions = newssource.get('conditions')
 
         tried = 2 # the max try count is 3
         if (not content or not selector) and fetchurl:
@@ -74,9 +101,7 @@ class FetchPage(webapp2.RequestHandler):
         if content:
             if selector:
                 parser = HtmlContentParser()
-                if not selector.endswith('@'):
-                    selector = selector + '@'
-                items = parser.parse(fetchurl, selector, content)
+                items = parser.parse(fetchurl, content, selector, conditions)
             else:
                 links = linkdetector.detect(content, keyword)
 

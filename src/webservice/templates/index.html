@@ -11,27 +11,29 @@
     <br/>URL: <input type="text" name="fetchurl" value="{{ newssource.fetchurl }}" size="80"/>
     Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
     <br/>Header:<br/><textarea name="httpheader" rows="3" cols="130">{{ httpheader }}</textarea>
+    <br/>Tags: <input type="text" name="tags" size="80" value="{{ newssource.tags }}"/>
     <br/><input type="text" name="parsedurl" value="{{ parsedurl }}" size="80" readonly="True"/>
     <input type="text" name="parsedencoding" value="{{ parsedencoding }}" size="10" readonly="True"/>
-    <br/><textarea name="content" rows="10" cols="130">{{ content }}</textarea>
-    <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="80"/>
     <br/>Keyword: <input type="text" name="keyword" value="{{ keyword }}" size="80"/>
+    <br/><textarea name="content" rows="4" cols="130">{{ content }}</textarea>
+    <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="40"/>
+    Return all: <input type="checkbox" name="enoughall" {% if newssource.conditions.enough.all %} checked {% endif %}/>
+    <br/>Min length: <input type="text" name="excludelength" value="{{ newssource.conditions.exclude.length }}" size="5"/>
+    Has children: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
     <br/><input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
     <input name="action" type="submit" value="Submit" />
-    <br/>Tags: <input type="text" name="tags" size="80" value="{{ newssource.tags }}"/>
-    <br/><br/><textarea name="jsonstr" rows="9" cols="130">{{ jsonstr }}</textarea>
-    <input type="submit" name="action" value="JSON" />
+    <br/><br/><textarea name="jsonstr" rows="2" cols="130">{{ jsonstr }}</textarea>
+    <br/><input type="submit" name="action" value="JSON" />
     </form>
-    <br/>
     {% for link in links %}
         <br/><br/>{{ link.path|safe }}
         <br/>{{ link.title }}: {{ link.url }}
     {% endfor %}
-    <br/>
+    Items count: {{ items|length }}
     {% for item in items %}
-        <br/><br/><a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
+        <br/><a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
         {% if item.imgurl %}<img src="{{ item.imgurl }}" width="{{ item.imgwidth }}" height="{{ item.imgheight }}"/>{% endif %}
-        {% if item.content %}<br/><p>{{ item.content }}</p>{% endif %}
+        {% if item.content %}<br/><p>{{ item.content }}</p>{% endif %}<br/>
     {% endfor %}
   </body>
 </html>
