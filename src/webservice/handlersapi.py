@@ -36,9 +36,9 @@ def _fetchContent(data, triedcount):
     _, _, content = fetcher.fetch()
     return content
 
-def _parseItems(fetchurl, selector, content):
+def _parseItems(fetchurl, content, selector, conditions):
     parser = HtmlContentParser()
-    items = parser.parse(fetchurl, selector, content)
+    items = parser.parse(fetchurl, content, selector, conditions)
     return items
 
 def _pushItemsBack(callbackurl, responseData):

@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 
@@ -89,7 +90,6 @@ class FetchPage(webapp2.RequestHandler):
         links = []
         selector = newssource.get('selector')
         fetchurl = newssource.get('fetchurl')
-        conditions = newssource.get('conditions')
 
         tried = 2 # the max try count is 3
         if (not content or not selector) and fetchurl:
@@ -100,8 +100,12 @@ class FetchPage(webapp2.RequestHandler):
             parsedurl, parsedencoding, content = fetcher.fetch()
         if content:
             if selector:
+                tnewssource = copy.copy(newssource)
+                if not tnewssource.get('conditions'):
+                    tnewssource['conditions'] = {}
+                tnewssource['conditions']['enough'] = {'all': True}
                 parser = HtmlContentParser()
-                items = parser.parse(fetchurl, content, selector, conditions)
+                items = parser.parse(fetchurl, content, selector, tnewssource['conditions'])
             else:
                 links = linkdetector.detect(content, keyword)
 
