@@ -20,8 +20,15 @@
     Return all: <input type="checkbox" name="enoughall" {% if newssource.conditions.enough.all %} checked {% endif %}/>
     <br/>Min length: <input type="text" name="excludelength" value="{{ newssource.conditions.exclude.length }}" size="5"/>
     Has children: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
+    <br/>Url: <input type="text" name="urlselector" value="{{ newssource.conditions.criterion.url }}" size="30"/>
+    Title: <input type="text" name="titleselector" value="{{ newssource.conditions.criterion.title }}" size="30"/>
+    <br/>Content: <input type="text" name="contentselector" value="{{ newssource.conditions.criterion.content }}" size="30"/>
+    Image: <input type="text" name="imageselector" value="{{ newssource.conditions.criterion.image }}" size="30"/>
+    <br/>Link: <input type="text" name="linkselector" value="{{ newssource.conditions.criterion.link }}" size="30"/>
+    Image Link: <input type="text" name="imagelinkselector" value="{{ newssource.conditions.criterion.imagelink }}" size="30"/>
     <br/><input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
     <input name="action" type="submit" value="Submit" />
+    <a target="_self" href="/fetch/">Reset</a>
     <br/><br/><textarea name="jsonstr" rows="2" cols="130">{{ jsonstr }}</textarea>
     <br/><input type="submit" name="action" value="JSON" />
     </form>
@@ -31,7 +38,7 @@
     {% endfor %}
     Items count: {{ items|length }}
     {% for item in items %}
-        <br/><a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
+        <br/><a href="{{ item.url }}" target="_blank">{% if item.title%}{{ item.title }}{% else %}None{% endif %}</a>
         {% if item.imgurl %}<img src="{{ item.imgurl }}" width="{{ item.imgwidth }}" height="{{ item.imgheight }}"/>{% endif %}
         {% if item.content %}<br/><p>{{ item.content }}</p>{% endif %}<br/>
     {% endfor %}

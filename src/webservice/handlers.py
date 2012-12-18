@@ -62,22 +62,27 @@ class FetchPage(webapp2.RequestHandler):
             enoughall = bool(self.request.get('enoughall'))
             if enoughall:
                 conditions['enough'] = {'all': enoughall}
-            urlselector = self.request.get('criterionurl').strip()
-            titleselector = self.request.get('criteriontitle').strip()
-            imgselector = self.request.get('criterionimage').strip()
-            contentselector = self.request.get('criterioncontent').strip()
-            linkselector = self.request.get('criterionlink').strip()
-            imagelinkselector = self.request.get('criterionimagelink').strip()
-            if urlselector or titleselector or imgselector or \
-                contentselector or linkselector or imgselector:
-                conditions['criterion'] = {
-                    'url': urlselector,
-                    'title': titleselector,
-                    'imgse': imgselector,
-                    'content': contentselector,
-                    'link': linkselector,
-                    'imagelink': imagelinkselector,
-                }
+            urlselector = self.request.get('urlselector').strip()
+            titleselector = self.request.get('titleselector').strip()
+            imageselector = self.request.get('imageselector').strip()
+            contentselector = self.request.get('contentselector').strip()
+            linkselector = self.request.get('linkselector').strip()
+            imagelinkselector = self.request.get('imagelinkselector').strip()
+            if urlselector or titleselector or contentselector or \
+                imageselector or linkselector or imagelinkselector:
+                conditions['criterion'] = {}
+                if urlselector:
+                    conditions['criterion']['url'] = urlselector
+                if titleselector:
+                    conditions['criterion']['title'] = titleselector
+                if contentselector:
+                    conditions['criterion']['content'] = contentselector
+                if imageselector:
+                    conditions['criterion']['image'] = imageselector
+                if linkselector:
+                    conditions['criterion']['link'] = linkselector
+                if imagelinkselector:
+                    conditions['criterion']['imagelink'] = imagelinkselector
             newssource['conditions'] = conditions
 
             content = self.request.get('content')
@@ -100,7 +105,7 @@ class FetchPage(webapp2.RequestHandler):
             parsedurl, parsedencoding, content = fetcher.fetch()
         if content:
             if selector:
-                tnewssource = copy.copy(newssource)
+                tnewssource = copy.deepcopy(newssource)
                 if not tnewssource.get('conditions'):
                     tnewssource['conditions'] = {}
                 tnewssource['conditions']['enough'] = {'all': True}

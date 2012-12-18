@@ -15,6 +15,39 @@ def unicode2str(value):
         value = value.encode('utf-8','ignore')
     return value
 
+def formatConditions(conditions):
+    iconditions = conditions.get('include')
+    if iconditions:
+        iselector = iconditions.get('selector')
+        if iselector:
+            iconditions['selector'] = unicode2str(iselector)
+
+    criterion = conditions.get('criterion')
+    if criterion:
+        urlselector = criterion.get('url')
+        if urlselector:
+            criterion['url'] = unicode2str(urlselector)
+
+        titleselector = criterion.get('title')
+        if titleselector:
+            criterion['title'] = unicode2str(titleselector)
+
+        contentselector = criterion.get('content')
+        if contentselector:
+            criterion['content'] = unicode2str(contentselector)
+
+        imageselector = criterion.get('image')
+        if imageselector:
+            criterion['image'] = unicode2str(imageselector)
+
+        linkselector = criterion.get('link')
+        if linkselector:
+            criterion['link'] = unicode2str(linkselector)
+
+        imglinkselector = criterion.get('imagelink')
+        if imglinkselector:
+            criterion['imagelink'] = unicode2str(imglinkselector)
+
 def isExcluded(result, conditions, elementCount, elementIndex, element):
     econditions = conditions.get('exclude')
     if not econditions:
@@ -30,7 +63,7 @@ def isIncluded(result, conditions, elementCount, elementIndex, element):
     iconditions = conditions.get('include')
     if not iconditions:
         return True
-    selector = unicode2str(iconditions.get('selector'))
+    selector = iconditions.get('selector')
     if selector:
         match = pyquery.PyQuery(element)(selector)
         if not match:
@@ -44,7 +77,12 @@ def isEnough(result, conditions, elementCount, elementIndex, element):
         return len(result) > 0
     return elementIndex + 1 == elementCount
 
-def fillItemByLink(element, item):
+def fillItemWithUrl(element, item):
+    url = element.get('href')
+    if url:
+        item['url'] = url
+
+def fillItemWithTitle(element, item):
     title = element.text_content()
     if title:
         title = title.strip()
@@ -52,37 +90,67 @@ def fillItemByLink(element, item):
         title = element.get('title')
         if title:
             title = title.strip()
-    if not title:# xinhuanet.com uses image to show news title
-        childimg = None
-        for childelement in element:
-            if childelement.tag == 'img':
-                childimg = childelement
-                break
-        if childimg is not None:
-            title = childimg.get('alt')
+    if title:
+        item['title'] = title.strip()
+
+def fillItemWithContent(element, item):
+    content = element.text_content()
+    if content:
+        content = content.strip()
+    if content:
+        item['content'] = content
+
+def fillItemByLink(element, item):
+    title = element.text_content()
+    if title:
+        title = title.strip()
+    if not title:
+        title = element.get('title')
     url = element.get('href')
     if title:
         item['title'] = title.strip()
     if url:
         item['url'] = url
 
-def fillItemByImage(imgelement, item):
-    src = imgelement.get('src')
+def fillItemByImage(element, item):
+    src = element.get('src')
     if src:
         item['imgurl'] =  src
-    width = imgelement.get('width')
+    width = element.get('width')
     if width:
         item['imgwidth'] =  width
-    height = imgelement.get('height')
+    height = element.get('height')
     if height:
         item['imgheight'] =  height
 
-def fillItemByContent(element, item):
-    content = element.text_content()
-    if content:
-        content = content.strip()
-    if content:
-        item['content'] = content
+def fillItemByImageLink(element, item):
+    fillItemByImage(element, item)
+    parent = element.getparent()
+    if parent is not None:
+        fillItemByLink(parent, item)
+
+def getElementValue(element, selector):
+    main = selector
+    attr = None
+    if selector.endswith(']'):
+        rindex = selector.rfind('[')
+        if rindex >= 0:
+            main = selector[:rindex]
+            attr = selector[rindex + 1:-1]
+    mainElement = None
+    if main == 'self':
+        mainElement = element
+    elif main == 'parent':
+        mainElement = element.getparent()
+    else:
+        match = pyquery.PyQuery(element)(main)
+        if match:
+            mainElement = match[0]
+    if mainElement is None:
+        return None
+    if attr:
+        return mainElement.get(attr)
+    return mainElement
 
 def getItem(element, conditions):
     criterion = conditions.get('criterion')
@@ -90,18 +158,66 @@ def getItem(element, conditions):
     if not criterion:
         fillItemByLink(element, item)
         return item
+
     urlselector = criterion.get('url')
+    if urlselector:
+        urlelement = getElementValue(element, urlselector)
+        if urlelement is not None:
+            if isinstance(urlelement, basestring):
+                item['url'] = urlelement
+            else:
+                fillItemWithUrl(urlelement, item)
+
     titleselector = criterion.get('title')
-    imgselector = criterion.get('image')
+    if titleselector:
+        titleelement = getElementValue(element, titleselector)
+        if titleelement is not None:
+            if isinstance(titleelement, basestring):
+                item['title'] = titleelement
+            else:
+                fillItemWithTitle(titleelement, item)
+
     contentselector = criterion.get('content')
+    if contentselector:
+        contentelement = getElementValue(element, contentselector)
+        if contentelement is not None:
+            if isinstance(contentelement, basestring):
+                item['content'] = contentelement
+            else:
+                fillItemWithContent(contentelement, item)
+
+    imgselector = criterion.get('image')
+    if imgselector:
+        imageelement = getElementValue(element, imgselector)
+        if imageelement is not None:
+            if isinstance(imageelement, basestring):
+                item['imgurl'] = imageelement
+            else:
+                fillItemByImage(imageelement, item)
+
     linkselector = criterion.get('link')
-    imgselector = criterion.get('imagelink')
+    if linkselector:
+        linkelement = getElementValue(element, linkselector)
+        if linkelement is not None:
+            if isinstance(linkelement, basestring):
+                item['url'] = linkelement
+            else:
+                fillItemByLink(linkelement, item)
+
+    imglinkselector = criterion.get('imagelink')
+    if imglinkselector:
+        imglinkelement = getElementValue(element, imglinkselector)
+        if imglinkelement is not None:
+            if isinstance(imglinkelement, basestring):
+                item['imgurl'] = imglinkelement
+            else:
+                fillItemByImageLink(imglinkelement, item)
+
     if item:
         return item
     return None
 
 def getItems(htmlelement, selector, conditions):
-    selector = unicode2str(selector)
     queryobj = pyquery.PyQuery(htmlelement)(selector)
     elements = []
     elementCount = len(queryobj)
@@ -134,8 +250,10 @@ def formatItems(baseurl, items):
 class HtmlContentParser(ContentParser):
 
     def parse(self, baseurl, content, selector, conditions):
+        selector = unicode2str(selector)
         if conditions is None:
             conditions = {}
+        formatConditions(conditions)
         htmlelement = lxml.html.fromstring(content)
         try:
             items = getItems(htmlelement, selector, conditions)
