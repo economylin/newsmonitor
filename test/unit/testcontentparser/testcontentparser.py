@@ -15,6 +15,36 @@ class TestHtmlContentParser(unittest.TestCase):
             content = f.read()
         return unicode(content, 'utf-8','ignore')
 
+    def testBasicMainNoMatch(self):
+        url = 'http://www.google.com/'
+        content = self._loadTestData('basic.htm')
+        parser = HtmlContentParser()
+        selector = 'div a.notexist'
+
+        conditions = {
+            'criterion': {
+                'url': 'a[href]',
+            }
+        }
+        items = parser.parse(url, content, selector, conditions)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 0)
+
+    def testBasicCriterionNoMatch(self):
+        url = 'http://www.google.com/'
+        content = self._loadTestData('basic.htm')
+        parser = HtmlContentParser()
+        selector = 'div a'
+
+        conditions = {
+            'criterion': {
+                'url': 'a2[href]',
+            }
+        }
+        items = parser.parse(url, content, selector, conditions)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 0)
+
     def testBasicUrl(self):
         url = 'http://www.google.com/'
         content = self._loadTestData('basic.htm')
@@ -228,7 +258,7 @@ class TestHtmlContentParser(unittest.TestCase):
         items = parser.parse(url, content, selector, conditions)
         self.assertIsNotNone(items)
         self.assertEquals(len(items), 1)
-        self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=1')
+        self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=2')
 
     def testBasicDefault(self):
         url = 'http://www.google.com/'

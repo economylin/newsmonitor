@@ -8,6 +8,14 @@ import pyquery
 
 from contentparser import ContentParser
 
+def getCleanText(element):
+    cleaner = lxml.html.clean.Cleaner()
+    celement = cleaner.clean_html(element)
+    content = celement.text_content()
+    if not content:
+        return content
+    return content.strip()
+
 def unicode2str(value):
     if not value:
         return value
@@ -53,9 +61,9 @@ def isExcluded(result, conditions, elementCount, elementIndex, element):
     if not econditions:
         return False
     length = econditions.get('length')
-    content = element.text_content()
+    content = getCleanText(element)
     if length:
-        if not content or len(content.strip()) < length:
+        if not content or len(content) < length:
             return True
     return False
 
@@ -83,32 +91,28 @@ def fillItemWithUrl(element, item):
         item['url'] = url
 
 def fillItemWithTitle(element, item):
-    title = element.text_content()
-    if title:
-        title = title.strip()
+    title = getCleanText(element)
     if not title:
         title = element.get('title')
         if title:
             title = title.strip()
     if title:
-        item['title'] = title.strip()
+        item['title'] = title
 
 def fillItemWithContent(element, item):
-    content = element.text_content()
-    if content:
-        content = content.strip()
+    content = getCleanText(element)
     if content:
         item['content'] = content
 
 def fillItemByLink(element, item):
-    title = element.text_content()
-    if title:
-        title = title.strip()
+    title = getCleanText(element)
     if not title:
         title = element.get('title')
+        if title:
+            title = title.strip()
     url = element.get('href')
     if title:
-        item['title'] = title.strip()
+        item['title'] = title
     if url:
         item['url'] = url
 
@@ -230,10 +234,8 @@ def getItems(htmlelement, selector, conditions):
         if isEnough(elements, conditions, elementCount, elementIndex, element):
             break
     items = []
-    cleaner = lxml.html.clean.Cleaner()
     for element in elements:
-        celement = cleaner.clean_html(element)
-        item = getItem(celement, conditions)
+        item = getItem(element, conditions)
         if item:
             items.append(item)
     return items
