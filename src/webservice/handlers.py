@@ -54,11 +54,21 @@ class FetchPage(webapp2.RequestHandler):
             conditions = {}
             excludelength = self.request.get('excludelength')
             if excludelength:
+                if 'exclude' not in conditions:
+                    conditions['exclude'] = {}
                 excludelength = int(excludelength)
-                conditions['exclude'] = {'length': excludelength}
+                conditions['exclude']['length'] = excludelength
+            excludeselector = self.request.get('excludeselector').strip()
+            if excludeselector:
+                if 'exclude' not in conditions:
+                    conditions['exclude'] = {}
+                conditions['exclude']['selector'] = excludeselector
+
             includeselector = self.request.get('includeselector').strip()
             if includeselector:
-                conditions['include'] = {'selector': includeselector}
+                if 'include' not in conditions:
+                    conditions['include'] = {}
+                conditions['include']['selector'] = includeselector
             enoughall = bool(self.request.get('enoughall'))
             if enoughall:
                 conditions['enough'] = {'all': enoughall}

@@ -18,8 +18,9 @@
     <br/><textarea name="content" rows="4" cols="130">{{ content }}</textarea>
     <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="40"/>
     Return all: <input type="checkbox" name="enoughall" {% if newssource.conditions.enough.all %} checked {% endif %}/>
-    <br/>Min length: <input type="text" name="excludelength" value="{{ newssource.conditions.exclude.length }}" size="5"/>
-    Has children: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
+    <br/>Exclude length: <input type="text" name="excludelength" value="{{ newssource.conditions.exclude.length }}" size="5"/>
+    Exclude selector: <input type="text" name="excludeselector" value="{{ newssource.conditions.exclude.selector }}" size="30"/>
+    <br/>Has children: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
     <br/>Url: <input type="text" name="urlselector" value="{{ newssource.conditions.criterion.url }}" size="30"/>
     Title: <input type="text" name="titleselector" value="{{ newssource.conditions.criterion.title }}" size="30"/>
     <br/>Content: <input type="text" name="contentselector" value="{{ newssource.conditions.criterion.content }}" size="30"/>

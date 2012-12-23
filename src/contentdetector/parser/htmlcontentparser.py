@@ -24,6 +24,12 @@ def unicode2str(value):
     return value
 
 def formatConditions(conditions):
+    econditions = conditions.get('exclude')
+    if econditions:
+        eselector = econditions.get('selector')
+        if eselector:
+            econditions['selector'] = unicode2str(eselector)
+
     iconditions = conditions.get('include')
     if iconditions:
         iselector = iconditions.get('selector')
@@ -64,6 +70,11 @@ def isExcluded(result, conditions, elementCount, elementIndex, element):
     content = getCleanText(element)
     if length:
         if not content or len(content) < length:
+            return True
+    selector = econditions.get('selector')
+    if selector:
+        match = pyquery.PyQuery(element)(selector)
+        if match:
             return True
     return False
 
