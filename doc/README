@@ -1,5 +1,5 @@
 python $HOME/bin/google_appengine/appcfg.py  --help
-python $HOME/bin/google_appengine/appcfg.py update $HOME/workspace-gae/newsmonitor/src
+python $HOME/bin/google_appengine/appcfg.py --no_cookies update $HOME/workspace-gae/newsmonitor/src
 
 
 # Upload by GoAgent uploader

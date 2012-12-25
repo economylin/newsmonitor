@@ -16,6 +16,8 @@
     <input type="text" name="parsedencoding" value="{{ parsedencoding }}" size="10" readonly="True"/>
     <br/>Keyword: <input type="text" name="keyword" value="{{ keyword }}" size="80"/>
     <br/><textarea name="content" rows="4" cols="130">{{ content }}</textarea>
+    <br/><input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
+
     <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="40"/>
     Return all: <input type="checkbox" name="enoughall" {% if newssource.conditions.enough.all %} checked {% endif %}/>
     <br/>Exclude length: <input type="text" name="excludelength" value="{{ newssource.conditions.exclude.length }}" size="5"/>
@@ -27,8 +29,8 @@
     Image: <input type="text" name="imageselector" value="{{ newssource.conditions.criterion.image }}" size="30"/>
     <br/>Link: <input type="text" name="linkselector" value="{{ newssource.conditions.criterion.link }}" size="30"/>
     Image Link: <input type="text" name="imagelinkselector" value="{{ newssource.conditions.criterion.imagelink }}" size="30"/>
-    <br/><input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
-    <input name="action" type="submit" value="Submit" />
+    <br/>Description:<br/><textarea name="description" rows="4" cols="130">{{ newssource.description }}</textarea>
+    <br/><input name="action" type="submit" value="Submit" />
     <a target="_self" href="/fetch/">Reset</a>
     <br/><br/><textarea name="jsonstr" rows="2" cols="130">{{ jsonstr }}</textarea>
     <br/><input type="submit" name="action" value="JSON" />

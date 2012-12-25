@@ -95,6 +95,8 @@ class FetchPage(webapp2.RequestHandler):
                     conditions['criterion']['imagelink'] = imagelinkselector
             newssource['conditions'] = conditions
 
+            newssource['description'] = self.request.get('description').strip()
+
             content = self.request.get('content')
             jsonstr = jsonutil.getReadableString(newssource)
 
