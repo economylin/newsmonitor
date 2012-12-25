@@ -10,13 +10,13 @@
     Active: <input type="checkbox" name="active" {% if newssource.active %} checked {% endif %}/>
     <br/>URL: <input type="text" name="fetchurl" value="{{ newssource.fetchurl }}" size="80"/>
     Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
-    <br/>Header:<br/><textarea name="httpheader" rows="3" cols="130">{{ httpheader }}</textarea>
+    <br/>Header:<textarea name="httpheader" rows="1" cols="100">{{ httpheader }}</textarea>
     <br/>Tags: <input type="text" name="tags" size="80" value="{{ newssource.tags }}"/>
     <br/><input type="text" name="parsedurl" value="{{ parsedurl }}" size="80" readonly="True"/>
     <input type="text" name="parsedencoding" value="{{ parsedencoding }}" size="10" readonly="True"/>
     <br/>Keyword: <input type="text" name="keyword" value="{{ keyword }}" size="80"/>
-    <br/><textarea name="content" rows="4" cols="130">{{ content }}</textarea>
-    <br/><input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
+    <br/><textarea name="content" rows="2" cols="100">{{ content }}</textarea>
+    <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
 
     <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="40"/>
     Return all: <input type="checkbox" name="enoughall" {% if newssource.conditions.enough.all %} checked {% endif %}/>
@@ -29,7 +29,8 @@
     Image: <input type="text" name="imageselector" value="{{ newssource.conditions.criterion.image }}" size="30"/>
     <br/>Link: <input type="text" name="linkselector" value="{{ newssource.conditions.criterion.link }}" size="30"/>
     Image Link: <input type="text" name="imagelinkselector" value="{{ newssource.conditions.criterion.imagelink }}" size="30"/>
-    <br/>Description:<br/><textarea name="description" rows="4" cols="130">{{ newssource.description }}</textarea>
+    <br/>Formatter: <textarea name="formatter" rows="1" cols="100">{{ formatter }}</textarea>
+    <br/>Description: <textarea name="description" rows="1" cols="100">{{ newssource.description }}</textarea>
     <br/><input name="action" type="submit" value="Submit" />
     <a target="_self" href="/fetch/">Reset</a>
     <br/><br/><textarea name="jsonstr" rows="2" cols="130">{{ jsonstr }}</textarea>

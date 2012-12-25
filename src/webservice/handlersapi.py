@@ -36,11 +36,6 @@ def _fetchContent(data, triedcount):
     _, _, content = fetcher.fetch()
     return content
 
-def _parseItems(fetchurl, content, selector, conditions):
-    parser = HtmlContentParser()
-    items = parser.parse(fetchurl, content, selector, conditions)
-    return items
-
 def _pushItemsBack(callbackurl, responseData):
     try:
         f = urllib2.urlopen(callbackurl, json.dumps(responseData),
@@ -98,7 +93,9 @@ class SingleFetchResponse(webapp2.RequestHandler):
 
         selector = monitorRequest['selector']
         conditions = monitorRequest.get('conditions')
-        items = _parseItems(fetchurl, content, selector, conditions)
+        formatter = monitorRequest.get('formatter')
+        parser = HtmlContentParser()
+        items = parser.parse(fetchurl, content, selector, conditions, formatter)
         if not items:
             message = 'Failed to parse items from %s for %s by %s.' % (
                                   fetchurl, slug, selector)

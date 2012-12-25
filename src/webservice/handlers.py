@@ -36,6 +36,7 @@ class FetchPage(webapp2.RequestHandler):
             parsedurl = ''
             content = ''
             httpheader = ''
+            formatter = ''
         else:
             newssource = {}
             newssource['active'] = bool(self.request.get('active'))
@@ -95,6 +96,10 @@ class FetchPage(webapp2.RequestHandler):
                     conditions['criterion']['imagelink'] = imagelinkselector
             newssource['conditions'] = conditions
 
+            formatter = self.request.get('formatter')
+            if formatter:
+                newssource['formatter'] = json.loads(formatter)
+
             newssource['description'] = self.request.get('description').strip()
 
             content = self.request.get('content')
@@ -122,16 +127,21 @@ class FetchPage(webapp2.RequestHandler):
                     tnewssource['conditions'] = {}
                 tnewssource['conditions']['enough'] = {'all': True}
                 parser = HtmlContentParser()
-                items = parser.parse(fetchurl, content, selector, tnewssource['conditions'])
+                items = parser.parse(fetchurl, content, selector,
+                tnewssource['conditions'], tnewssource.get('formatter'))
             else:
                 links = linkdetector.detect(content, keyword)
 
         if newssource.get('header'):
             httpheader = jsonutil.getReadableString(newssource['header'])
 
+        if newssource.get('formatter'):
+            formatter = jsonutil.getReadableString(newssource['formatter'])
+
         templateValues = {
             'newssource': newssource,
             'httpheader': httpheader,
+            'formatter': formatter,
             'content': content,
             'parsedencoding': parsedencoding,
             'parsedurl': parsedurl,

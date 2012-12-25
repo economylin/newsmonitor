@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import re
 from urlparse import urljoin
 
 import lxml
@@ -224,18 +225,35 @@ def getItems(htmlelement, selector, conditions):
             items.append(item)
     return items
 
-def formatItems(baseurl, items):
+def formatValueByPattern(value, fromPattern, toFormat):
+    m = re.match(fromPattern, value)
+    if not m:
+        return value
+    try:
+        return toFormat % m.groupdict()
+    except Exception:
+        logging.exception('pattern: %s, format: %s.' % (fromPattern, toFormat))
+        return value
+
+def formatItems(formatter, baseurl, items):
     for item in items:
         url = item.get('url')
         if url:
-            item['url'] = urljoin(baseurl, url)
+            url = urljoin(baseurl, url)
+            if formatter and formatter.get('url'):
+                urlformatter = formatter.get('url')
+                fromPattern = urlformatter.get('from')
+                toFormat = urlformatter.get('to')
+                item['url'] = formatValueByPattern(item['url'],
+                                            fromPattern, toFormat)
+            item['url'] = url
         imgurl = item.get('imgurl')
         if imgurl:
             item['imgurl'] = urljoin(baseurl, imgurl)
 
 class HtmlContentParser(ContentParser):
 
-    def parse(self, baseurl, content, selector, conditions):
+    def parse(self, baseurl, content, selector, conditions, formatter=None):
         selector = unicode2str(selector)
         if conditions is None:
             conditions = {}
@@ -243,7 +261,7 @@ class HtmlContentParser(ContentParser):
         htmlelement = lxml.html.fromstring(content)
         try:
             items = getItems(htmlelement, selector, conditions)
-            formatItems(baseurl, items)
+            formatItems(formatter, baseurl, items)
         except Exception:
             items = None
             logging.exception('Error happens using selector %s.' % (selector, ))
