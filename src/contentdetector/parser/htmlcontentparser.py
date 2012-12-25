@@ -23,44 +23,17 @@ def unicode2str(value):
         value = value.encode('utf-8','ignore')
     return value
 
+"""
+pyquery does not work well with unicode selector
+"""
 def formatConditions(conditions):
-    econditions = conditions.get('exclude')
-    if econditions:
-        eselector = econditions.get('selector')
-        if eselector:
-            econditions['selector'] = unicode2str(eselector)
-
-    iconditions = conditions.get('include')
-    if iconditions:
-        iselector = iconditions.get('selector')
-        if iselector:
-            iconditions['selector'] = unicode2str(iselector)
-
-    criterion = conditions.get('criterion')
-    if criterion:
-        urlselector = criterion.get('url')
-        if urlselector:
-            criterion['url'] = unicode2str(urlselector)
-
-        titleselector = criterion.get('title')
-        if titleselector:
-            criterion['title'] = unicode2str(titleselector)
-
-        contentselector = criterion.get('content')
-        if contentselector:
-            criterion['content'] = unicode2str(contentselector)
-
-        imageselector = criterion.get('image')
-        if imageselector:
-            criterion['image'] = unicode2str(imageselector)
-
-        linkselector = criterion.get('link')
-        if linkselector:
-            criterion['link'] = unicode2str(linkselector)
-
-        imglinkselector = criterion.get('imagelink')
-        if imglinkselector:
-            criterion['imagelink'] = unicode2str(imglinkselector)
+    for key, value in conditions.items():
+        if not isinstance(value, dict):
+            continue
+        for k2, v2 in value.items():
+            if type(v2) != unicode:
+                continue
+            value[k2] = v2.encode('utf-8','ignore')
 
 def isExcluded(result, conditions, elementCount, elementIndex, element):
     econditions = conditions.get('exclude')
