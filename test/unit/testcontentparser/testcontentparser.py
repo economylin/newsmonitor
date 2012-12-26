@@ -4,16 +4,19 @@ import unittest
 import os
 from contentdetector import HtmlContentParser
 
-class TestHtmlContentParser(unittest.TestCase):
-
-    def setUp(self):
-        pass
+class BaseTestCase(unittest.TestCase):
 
     def _loadTestData(self, filename):
         filepath = os.path.join(os.path.dirname(__file__), 'data', filename)
         with open(filepath, 'r') as f:
             content = f.read()
         return unicode(content, 'utf-8','ignore')
+
+
+class TestBase(BaseTestCase):
+
+    def setUp(self):
+        pass
 
     def testBasicMainNoMatch(self):
         url = 'http://www.google.com/'
@@ -260,19 +263,6 @@ class TestHtmlContentParser(unittest.TestCase):
         self.assertEquals(len(items), 1)
         self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=2')
 
-    def testBasicDefault(self):
-        url = 'http://www.google.com/'
-        content = self._loadTestData('basic.htm')
-        parser = HtmlContentParser()
-        selector = 'div a'
-
-        conditions = None
-        items = parser.parse(url, content, selector, conditions)
-        self.assertIsNotNone(items)
-        self.assertEquals(len(items), 1)
-        self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=1')
-        self.assertEquals(items[0].get('title'), 'link1')
-
     def testBasicAll(self):
         url = 'http://www.google.com/'
         content = self._loadTestData('basic.htm')
@@ -319,6 +309,91 @@ class TestHtmlContentParser(unittest.TestCase):
         self.assertEquals(len(items), 1)
         self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=2')
         self.assertEquals(items[0].get('title'), 'a title q2')
+
+class TestDefault(BaseTestCase):
+
+    def testBasicDefault(self):
+        url = 'http://www.google.com/'
+        content = self._loadTestData('basic.htm')
+        parser = HtmlContentParser()
+        selector = 'div a'
+
+        conditions = None
+        items = parser.parse(url, content, selector, conditions)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 1)
+        self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=1')
+        self.assertEquals(items[0].get('title'), 'link1')
+
+    def testBasicDefaultImg(self):
+        url = 'http://www.google.com/'
+        content = self._loadTestData('complex.htm')
+        parser = HtmlContentParser()
+        selector = 'div#div1 img'
+
+        conditions = None
+        items = parser.parse(url, content, selector, conditions)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 1)
+        self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=1')
+        self.assertEquals(items[0].get('title'), 'img-alt')
+        self.assertEquals(items[0].get('imgurl'), 'http://www.google.com/1.jpg')
+
+    def testBasicDefaultImgNoLink(self):
+        url = 'http://www.google.com/'
+        content = self._loadTestData('complex.htm')
+        parser = HtmlContentParser()
+        selector = 'div#div3 img'
+
+        conditions = None
+        items = parser.parse(url, content, selector, conditions)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 1)
+        self.assertIsNone(items[0].get('url'))
+        self.assertEquals(items[0].get('title'), 'img-alt')
+        self.assertEquals(items[0].get('imgurl'), 'http://www.google.com/1.jpg')
+
+    def testBasicDefaultLink(self):
+        url = 'http://www.google.com/'
+        content = self._loadTestData('complex.htm')
+        parser = HtmlContentParser()
+        selector = 'div#div1 a'
+
+        conditions = None
+        items = parser.parse(url, content, selector, conditions)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 1)
+        self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=1')
+        self.assertEquals(items[0].get('title'), 'img-alt')
+        self.assertIsNone(items[0].get('imgurl'))
+
+    def testBasicDefaultLink2(self):
+        url = 'http://www.google.com/'
+        content = self._loadTestData('complex.htm')
+        parser = HtmlContentParser()
+        selector = 'div#div2 a'
+
+        conditions = None
+        items = parser.parse(url, content, selector, conditions)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 1)
+        self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=2')
+        self.assertEquals(items[0].get('title'), 'div2 link a')
+
+    def testBasicDefaultAutoLink(self):
+        url = 'http://www.google.com/'
+        content = self._loadTestData('complex.htm')
+        parser = HtmlContentParser()
+        selector = 'div#div2'
+
+        conditions = None
+        items = parser.parse(url, content, selector, conditions)
+        self.assertIsNotNone(items)
+        self.assertEquals(len(items), 1)
+        self.assertEquals(items[0].get('url'), 'http://www.google.com/?q=2')
+        self.assertEquals(items[0].get('title'), 'div2 link a')
+
+class TestSites(BaseTestCase):
 
     def testBigPicture(self):
         url = 'http://www.boston.com/bigpicture/'
@@ -410,4 +485,6 @@ class TestHtmlContentParser(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+    # suite = unittest.TestLoader().loadTestsFromTestCase(TestDefault)
+    # unittest.TextTestRunner().run(suite)
 

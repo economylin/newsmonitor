@@ -98,25 +98,41 @@ def fillItemByLink(element, item):
     url = element.get('href')
     if title:
         item['title'] = title
+    else:
+        match = pyquery.PyQuery(element)('img')
+        if match:
+            img = match[0]
+            alt = img.get('alt')
+            if alt:
+                title = alt.strip()
+                item['title'] = title
     if url:
         item['url'] = url
 
 def fillItemByImage(element, item):
     src = element.get('src')
     if src:
-        item['imgurl'] =  src
+        item['imgurl'] = src
     width = element.get('width')
     if width:
-        item['imgwidth'] =  width
+        item['imgwidth'] = width
     height = element.get('height')
     if height:
-        item['imgheight'] =  height
+        item['imgheight'] = height
+    if not item.get('title'):
+        alt = element.get('alt')
+        if alt:
+            item['title'] = alt.strip()
 
 def fillItemByImageLink(element, item):
-    fillItemByImage(element, item)
-    parent = element.getparent()
+    parent = element
+    while parent is not None:
+        parent = parent.getparent()
+        if parent is not None and parent.tag == 'a':
+            break
     if parent is not None:
         fillItemByLink(parent, item)
+    fillItemByImage(element, item)
 
 def getElementValue(element, selector):
     main = selector
@@ -145,7 +161,15 @@ def getItem(element, conditions):
     criterion = conditions.get('criterion')
     item = {}
     if not criterion:
-        fillItemByLink(element, item)
+        if element.tag == 'img':
+            fillItemByImageLink(element, item)
+        elif element.tag == 'a':
+            fillItemByLink(element, item)
+        else:
+            match = pyquery.PyQuery(element)('a')
+            if match:
+                element = match[0]
+            fillItemByLink(element, item)
         return item
 
     urlselector = criterion.get('url')
