@@ -119,12 +119,15 @@ def fillItemByImage(element, item):
     height = element.get('height')
     if height:
         item['imgheight'] = height
+
+def fillItemByImageLink(element, item):
     if not item.get('title'):
         alt = element.get('alt')
         if alt:
             item['title'] = alt.strip()
 
-def fillItemByImageLink(element, item):
+    fillItemByImage(element, item)
+
     parent = element
     while parent is not None:
         parent = parent.getparent()
@@ -132,7 +135,6 @@ def fillItemByImageLink(element, item):
             break
     if parent is not None:
         fillItemByLink(parent, item)
-    fillItemByImage(element, item)
 
 def getElementValue(element, selector):
     main = selector
