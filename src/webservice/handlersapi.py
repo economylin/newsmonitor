@@ -8,6 +8,7 @@ from google.appengine.api import taskqueue
 import webapp2
 
 from commonutil import stringutil
+from commonutil import statistics
 from contentfetcher import ContentFetcher
 from contentdetector import HtmlContentParser
 
@@ -34,6 +35,8 @@ def _fetchContent(data, triedcount):
     fetcher = ContentFetcher(fetchurl, header=header,
                                 encoding=encoding, tried=triedcount)
     _, _, content = fetcher.fetch()
+    if content:
+        statistics.increaseIncomingBandwidth(len(content))
     return content
 
 def _pushItemsBack(callbackurl, responseData):

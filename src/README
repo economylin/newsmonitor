@@ -7,6 +7,8 @@ mkdir $LIBRARY_SRC
 ln -s $UTIL_PROJECT_SRC/cssselect $LIBRARY_SRC/cssselect
 ln -s $UTIL_PROJECT_SRC/pyquery $LIBRARY_SRC/pyquery
 
+ln -s $UTIL_PROJECT_SRC/pytz $LIBRARY_SRC/pytz
+
 
 ln -s $UTIL_PROJECT_SRC/jsonpickle $LIBRARY_SRC/jsonpickle
 ln -s $FUNCTION_PROJECT_SRC/commonutil $LIBRARY_SRC/commonutil
