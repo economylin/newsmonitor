@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import urlparse
 
 from google.appengine.ext.webapp import template
 import webapp2
@@ -43,6 +44,8 @@ class FetchPage(webapp2.RequestHandler):
             newssource['slug'] = self.request.get('slug')
             newssource['name'] = self.request.get('name')
             newssource['fetchurl'] = self.request.get('fetchurl')
+            if not newssource['slug'] and newssource['fetchurl']:
+                newssource['slug'] = urlparse.urlparse(newssource['fetchurl']).netloc
             httpheader = self.request.get('httpheader')
             if httpheader:
                 newssource['header'] = json.loads(httpheader)
