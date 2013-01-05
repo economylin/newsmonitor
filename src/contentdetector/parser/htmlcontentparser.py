@@ -270,7 +270,7 @@ def formatItems(formatter, baseurl, items):
                 urlformatter = formatter.get('url')
                 fromPattern = urlformatter.get('from')
                 toFormat = urlformatter.get('to')
-                item['url'] = formatValueByPattern(item['url'],
+                url = formatValueByPattern(item['url'],
                                             fromPattern, toFormat)
             item['url'] = url
         imgurl = item.get('imgurl')
