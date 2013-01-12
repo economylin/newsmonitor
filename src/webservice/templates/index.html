@@ -6,8 +6,9 @@
   <body>
     <form action="/fetch/" method="POST">
     Slug: <input type="text" name="slug" value="{{ newssource.slug }}" size="30"/>
-    Name: <input type="text" name="name" value="{{ newssource.name }}" size="30"/>
+    Name: <input type="text" name="name" value="{{ newssource.name }}" size="10"/>
     Active: <input type="checkbox" name="active" {% if newssource.active %} checked {% endif %}/>
+    Order: <input type="text" name="order" value="{{ newssource.order }}" size="5"/>
     <br/>URL: <input type="text" name="fetchurl" value="{{ newssource.fetchurl }}" size="80"/>
     Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
     <br/>Header:<textarea name="httpheader" rows="1" cols="100">{{ httpheader }}</textarea>

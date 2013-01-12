@@ -43,6 +43,7 @@ class FetchPage(webapp2.RequestHandler):
             newssource['active'] = bool(self.request.get('active'))
             newssource['slug'] = self.request.get('slug')
             newssource['name'] = self.request.get('name')
+            newssource['order'] = self.request.get('order')
             newssource['fetchurl'] = self.request.get('fetchurl')
             if not newssource['slug'] and newssource['fetchurl']:
                 newssource['slug'] = urlparse.urlparse(newssource['fetchurl']).netloc
