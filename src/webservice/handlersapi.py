@@ -22,10 +22,9 @@ def _calculateHash(items):
         url = item.get('url')
         if url:
             lines.append(url)
-        else:
-            title = item.get('title')
-            if title:
-                lines.append(title)
+        title = item.get('title')
+        if title:
+            lines.append(title)
     return stringutil.calculateHash(lines)
 
 def _fetchContent(data, triedcount):
