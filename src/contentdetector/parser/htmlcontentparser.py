@@ -141,7 +141,8 @@ def getElementValue(element, selector):
     attr = None
     if selector.endswith(']'):
         rindex = selector.rfind('[')
-        if rindex >= 0:
+        # if '"' is found, it must be 'attr="value"' attribute selector.
+        if rindex >= 0 and selector.find('"', rindex) < 0:
             main = selector[:rindex]
             attr = selector[rindex + 1:-1]
     mainElement = None
@@ -150,6 +151,8 @@ def getElementValue(element, selector):
     elif main == 'parent':
         mainElement = element.getparent()
     else:
+        if attr:# element with required attribute
+            main = main + '[' + attr + ']'
         match = pyquery.PyQuery(element)(main)
         if match:
             mainElement = match[0]
