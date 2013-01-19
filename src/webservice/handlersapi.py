@@ -33,7 +33,8 @@ def _fetchContent(data, triedcount):
     encoding = data.get('encoding')
     fetcher = ContentFetcher(fetchurl, header=header,
                                 encoding=encoding, tried=triedcount)
-    _, _, content = fetcher.fetch()
+    fetchResult = fetcher.fetch()
+    content = fetchResult.get('content')
     if content:
         statistics.increaseIncomingBandwidth(len(content))
     return content

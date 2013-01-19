@@ -13,9 +13,10 @@
     Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
     <br/>Header:<textarea name="httpheader" rows="1" cols="100">{{ httpheader }}</textarea>
     <br/>Tags: <input type="text" name="tags" size="80" value="{{ newssource.tags }}"/>
-    <br/><input type="text" name="parsedurl" value="{{ parsedurl }}" size="80" readonly="True"/>
-    <input type="text" name="parsedencoding" value="{{ parsedencoding }}" size="10" readonly="True"/>
+    <br/><input type="text" name="urlUsed" value="{{ urlUsed }}" size="80" readonly="True"/>
+    <input type="text" name="encodingUsed" value="{{ encodingUsed }}" size="10" readonly="True"/>
     <br/>Keyword: <input type="text" name="keyword" value="{{ keyword }}" size="80"/>
+    {% if oldContent %}<br/><textarea name="content" rows="2" cols="100">{{ oldContent }}</textarea>{% endif %}
     <br/><textarea name="content" rows="2" cols="100">{{ content }}</textarea>
     <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
 

@@ -33,8 +33,8 @@ class FetchPage(webapp2.RequestHandler):
                 newssource = json.loads(jsonstr)
             else:
                 newssource = _DEFAULT_NEWSSOURCE
-            parsedencoding = ''
-            parsedurl = ''
+            encodingUsed = ''
+            urlUsed = ''
             content = ''
             httpheader = ''
             formatter = ''
@@ -52,8 +52,12 @@ class FetchPage(webapp2.RequestHandler):
                 newssource['header'] = json.loads(httpheader)
             newssource['encoding'] = self.request.get('encoding')
             newssource['tags'] = self.request.get('tags')
-            parsedencoding = self.request.get('parsedencoding')
-            parsedurl = self.request.get('parsedurl')
+
+            # following fields only for showing parsed result.
+            encodingUsed = self.request.get('encodingUsed')
+            urlUsed = self.request.get('urlUsed')
+            oldContent = self.request.get('oldContent')
+
             newssource['selector'] = self.request.get('selector').strip()
 
             conditions = {}
@@ -123,7 +127,12 @@ class FetchPage(webapp2.RequestHandler):
                             header=newssource.get('header'),
                             encoding=newssource.get('encoding'), tried=tried
                          )
-            parsedurl, parsedencoding, content = fetcher.fetch()
+            fetchResult = fetcher.fetch()
+            content = fetchResult.get('content')
+            oldContent = fetchResult.get('content.old')
+            urlUsed = fetchResult.get('url')
+            encodingUsed = '%s-%s' % (fetchResult.get('encoding'),
+                                fetchResult.get('encoding.src'))
         if content:
             if selector:
                 tnewssource = copy.deepcopy(newssource)
@@ -147,8 +156,9 @@ class FetchPage(webapp2.RequestHandler):
             'httpheader': httpheader,
             'formatter': formatter,
             'content': content,
-            'parsedencoding': parsedencoding,
-            'parsedurl': parsedurl,
+            'oldContent': oldContent,
+            'encodingUsed': encodingUsed,
+            'urlUsed': urlUsed,
             'keyword': keyword,
             'links': links,
             'items': items,
