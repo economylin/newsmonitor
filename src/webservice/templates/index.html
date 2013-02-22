@@ -22,6 +22,7 @@
 
     <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="40"/>
     Return all: <input type="checkbox" name="enoughall" {% if newssource.conditions.enough.all %} checked {% endif %}/>
+    Charts: <input type="checkbox" name="charts" {% if newssource.charts %} checked {% endif %}/>
     <br/>Exclude length: <input type="text" name="excludelength" value="{{ newssource.conditions.exclude.length }}" size="5"/>
     Exclude selector: <input type="text" name="excludeselector" value="{{ newssource.conditions.exclude.selector }}" size="30"/>
     <br/>Has children: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
@@ -44,7 +45,10 @@
     {% endfor %}
     Items count: {{ items|length }}
     {% for item in items %}
-        <br/><a href="{{ item.url }}" target="_blank">{% if item.title%}{{ item.title }}{% else %}None{% endif %}</a>
+        <br/>
+{% if item.url%}
+<a href="{{ item.url }}" target="_blank">{% if item.title%}{{ item.title }}{% else %}None{% endif %}</a>
+{% else %}{{ item.title }}{% endif %}
         {% if item.imgurl %}<img src="{{ item.imgurl }}" width="{{ item.imgwidth }}" height="{{ item.imgheight }}"/>{% endif %}
         {% if item.content %}<br/><p>{{ item.content }}</p>{% endif %}<br/>
     {% endfor %}

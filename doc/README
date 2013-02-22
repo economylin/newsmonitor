@@ -1,9 +1,0 @@
-python $HOME/bin/google_appengine/appcfg.py  --help
-python $HOME/bin/google_appengine/appcfg.py --no_cookies update $HOME/workspace-gae/newsmonitor/src
-
-
-# Upload by GoAgent uploader
-export uploaddir=$HOME/workspace-gae/newsmonitor/src
-export PYTHONPATH="$HOME/bin/goagent/local:$PYTHONPATH"
-python /home/hyman/bin/goagent/server/uploader/appcfg_news.py
-

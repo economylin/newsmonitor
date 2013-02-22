@@ -1,21 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 import re
-from urlparse import urljoin
+import urlparse
 
 import lxml
-import lxml.html.clean
 import pyquery
+from commonutil import lxmlutil
 
 from contentparser import ContentParser
-
-def getCleanText(element):
-    cleaner = lxml.html.clean.Cleaner()
-    celement = cleaner.clean_html(element)
-    content = celement.text_content()
-    if not content:
-        return content
-    return content.strip()
 
 def unicode2str(value):
     if not value:
@@ -41,7 +33,7 @@ def isExcluded(result, conditions, elementCount, elementIndex, element):
     if not econditions:
         return False
     length = econditions.get('length')
-    content = getCleanText(element)
+    content = lxmlutil.getCleanText(element)
     if length:
         if not content or len(content) < length:
             return True
@@ -76,7 +68,7 @@ def fillItemWithUrl(element, item):
         item['url'] = url
 
 def fillItemWithTitle(element, item):
-    title = getCleanText(element)
+    title = lxmlutil.getCleanText(element)
     if not title:
         title = element.get('title')
         if title:
@@ -85,12 +77,12 @@ def fillItemWithTitle(element, item):
         item['title'] = title
 
 def fillItemWithContent(element, item):
-    content = getCleanText(element)
+    content = lxmlutil.getCleanText(element)
     if content:
         item['content'] = content
 
 def fillItemByLink(element, item):
-    title = getCleanText(element)
+    title = lxmlutil.getCleanText(element)
     if not title:
         title = element.get('title')
         if title:
@@ -268,7 +260,7 @@ def formatItems(formatter, baseurl, items):
     for item in items:
         url = item.get('url')
         if url:
-            url = urljoin(baseurl, url)
+            url = urlparse.urljoin(baseurl, url)
             if formatter and formatter.get('url'):
                 urlformatter = formatter.get('url')
                 fromPattern = urlformatter.get('from')
@@ -278,7 +270,7 @@ def formatItems(formatter, baseurl, items):
             item['url'] = url
         imgurl = item.get('imgurl')
         if imgurl:
-            item['imgurl'] = urljoin(baseurl, imgurl)
+            item['imgurl'] = urlparse.urljoin(baseurl, imgurl)
 
 class HtmlContentParser(ContentParser):
 

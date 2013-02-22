@@ -59,7 +59,7 @@ class FetchPage(webapp2.RequestHandler):
             oldContent = self.request.get('oldContent')
 
             newssource['selector'] = self.request.get('selector').strip()
-
+            newssource['charts'] = bool(self.request.get('charts'))
             conditions = {}
             excludelength = self.request.get('excludelength')
             if excludelength:
@@ -78,7 +78,7 @@ class FetchPage(webapp2.RequestHandler):
                 if 'include' not in conditions:
                     conditions['include'] = {}
                 conditions['include']['selector'] = includeselector
-            enoughall = bool(self.request.get('enoughall'))
+            enoughall = newssource['charts'] or bool(self.request.get('enoughall'))
             if enoughall:
                 conditions['enough'] = {'all': enoughall}
             urlselector = self.request.get('urlselector').strip()
