@@ -1,7 +1,5 @@
 import json
 import logging
-import time
-import urllib2
 
 from google.appengine.api import taskqueue
 
@@ -9,6 +7,7 @@ import webapp2
 
 from commonutil import stringutil
 from commonutil import statistics
+from commonutil import networkutil
 from contentfetcher import ContentFetcher
 from contentdetector import HtmlContentParser
 
@@ -39,17 +38,6 @@ def _fetchContent(data, triedcount):
         statistics.increaseIncomingBandwidth(len(content))
     return content
 
-def _pushItemsBack(callbackurl, responseData):
-    try:
-        f = urllib2.urlopen(callbackurl, json.dumps(responseData),
-                            timeout=_URL_TIMEOUT)
-        f.read()
-        f.close()
-        return True
-    except Exception:
-        logging.exception('Failed to post data to "%s".' % (callbackurl, ))
-    return False
-
 class FetchRequest(webapp2.RequestHandler):
     def post(self):
         rawdata = self.request.body
@@ -59,15 +47,25 @@ class FetchRequest(webapp2.RequestHandler):
 
 
 class BatchFetchRequest(webapp2.RequestHandler):
+
     def post(self):
+        self.response.headers['Content-Type'] = 'text/plain'
         data = json.loads(self.request.body)
+
+        uuid = data.get('uuid')
+        if networkutil.isUuidHandled(uuid):
+            message = 'BatchFetchRequest: %s is already handled.' % (uuid, )
+            logging.warn(message)
+            self.response.out.write(message)
+            return
+        networkutil.updateUuids(uuid)
+
         callbackurl = data['callbackurl']
         items = data['items']
         for item in items:
             item['callbackurl'] = callbackurl
             rawdata = json.dumps(item)
             taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/single/')
-        self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write('Put fetch task into queue.')
 
 
@@ -122,22 +120,13 @@ class SingleFetchResponse(webapp2.RequestHandler):
                     'fetchhash': fetchhash,
                 },
         }
-        doCallback = False
-        for i in range(_CALLBACK_TRYCOUNT):
-            if _pushItemsBack(callbackurl, responseData):
-                doCallback = True
-                break
-            leftcount = _CALLBACK_TRYCOUNT - 1 - i
-            message = 'Failed to push items back for %s to %s, try count left: %s.' % (
-                              slug, callbackurl, leftcount)
-            logging.info(message)
-            self.response.out.write(message)
-            if leftcount > 0:
-                time.sleep(2)
-        if not doCallback:
-            return
+        success = networkutil.postData(callbackurl, responseData, tag=slug,
+                    trycount=_CALLBACK_TRYCOUNT, timeout=_URL_TIMEOUT)
 
-        message = 'Push items back for %s to %s.' % (slug, callbackurl)
+        if success:
+            message = 'Push items back for %s to %s.' % (slug, callbackurl)
+        else:
+            message = 'Failed to push items back for %s to %s.' % (slug, callbackurl)
         logging.info(message)
         self.response.out.write(message)
 
