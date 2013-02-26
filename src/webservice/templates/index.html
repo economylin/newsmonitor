@@ -16,7 +16,7 @@
     <br/><input type="text" name="urlUsed" value="{{ urlUsed }}" size="80" readonly="True"/>
     <input type="text" name="encodingUsed" value="{{ encodingUsed }}" size="10" readonly="True"/>
     <br/>Keyword: <input type="text" name="keyword" value="{{ keyword }}" size="80"/>
-    {% if oldContent %}<br/><textarea name="content" rows="2" cols="100">{{ oldContent }}</textarea>{% endif %}
+    {% if oldContent %}<br/><textarea name="oldContent" rows="2" cols="100">{{ oldContent }}</textarea>{% endif %}
     <br/><textarea name="content" rows="2" cols="100">{{ content }}</textarea>
     <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
 

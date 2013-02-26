@@ -45,6 +45,8 @@ class FetchPage(webapp2.RequestHandler):
             newssource['name'] = self.request.get('name')
             newssource['order'] = self.request.get('order')
             newssource['fetchurl'] = self.request.get('fetchurl')
+            if newssource['fetchurl'] and not newssource['fetchurl'].startswith('http'):
+                newssource['fetchurl'] = 'http://' + newssource['fetchurl']
             if not newssource['slug'] and newssource['fetchurl']:
                 newssource['slug'] = urlparse.urlparse(newssource['fetchurl']).netloc
             httpheader = self.request.get('httpheader')
@@ -122,7 +124,7 @@ class FetchPage(webapp2.RequestHandler):
         fetchurl = newssource.get('fetchurl')
 
         tried = 2 # the max try count is 3
-        if (not content or not selector) and fetchurl:
+        if not content and fetchurl:
             fetcher = ContentFetcher(fetchurl,
                             header=newssource.get('header'),
                             encoding=newssource.get('encoding'), tried=tried
@@ -140,7 +142,7 @@ class FetchPage(webapp2.RequestHandler):
                     tnewssource['conditions'] = {}
                 tnewssource['conditions']['enough'] = {'all': True}
                 parser = HtmlContentParser()
-                items = parser.parse(fetchurl, content, selector,
+                items = parser.parse(urlUsed, content, selector,
                 tnewssource['conditions'], tnewssource.get('formatter'))
             else:
                 links = linkdetector.detect(content, keyword)

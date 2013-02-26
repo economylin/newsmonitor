@@ -34,9 +34,10 @@ def _fetchContent(data, triedcount):
                                 encoding=encoding, tried=triedcount)
     fetchResult = fetcher.fetch()
     content = fetchResult.get('content')
+    urlUsed = fetchResult.get('url')
     if content:
         statistics.increaseIncomingBandwidth(len(content))
-    return content
+    return urlUsed, content
 
 class FetchRequest(webapp2.RequestHandler):
     def post(self):
@@ -76,7 +77,7 @@ class SingleFetchResponse(webapp2.RequestHandler):
         data = json.loads(self.request.body)
         triedcount = data.get('triedcount', 0)
         monitorRequest = data['request']
-        content = _fetchContent(monitorRequest, triedcount)
+        urlUsed, content = _fetchContent(monitorRequest, triedcount)
         slug = monitorRequest['slug']
         fetchurl = monitorRequest['fetchurl']
         if not content:
@@ -96,7 +97,7 @@ class SingleFetchResponse(webapp2.RequestHandler):
         conditions = monitorRequest.get('conditions')
         formatter = monitorRequest.get('formatter')
         parser = HtmlContentParser()
-        items = parser.parse(fetchurl, content, selector, conditions, formatter)
+        items = parser.parse(urlUsed, content, selector, conditions, formatter)
         if not items:
             message = 'Failed to parse items from %s for %s by %s.' % (
                                   fetchurl, slug, selector)
