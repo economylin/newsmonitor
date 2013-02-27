@@ -6,7 +6,6 @@ from google.appengine.api import taskqueue
 import webapp2
 
 from commonutil import stringutil
-from commonutil import statistics
 from commonutil import networkutil
 from contentfetcher import ContentFetcher
 from contentdetector import HtmlContentParser
@@ -35,8 +34,6 @@ def _fetchContent(data, triedcount):
     fetchResult = fetcher.fetch()
     content = fetchResult.get('content')
     urlUsed = fetchResult.get('url')
-    if content:
-        statistics.increaseIncomingBandwidth(len(content))
     return urlUsed, content
 
 class FetchRequest(webapp2.RequestHandler):
@@ -75,6 +72,8 @@ class SingleFetchResponse(webapp2.RequestHandler):
     def post(self):
         self.response.headers['Content-Type'] = 'text/plain'
         data = json.loads(self.request.body)
+        callbackurl = data['callbackurl']
+
         triedcount = data.get('triedcount', 0)
         monitorRequest = data['request']
         urlUsed, content = _fetchContent(monitorRequest, triedcount)
@@ -98,36 +97,41 @@ class SingleFetchResponse(webapp2.RequestHandler):
         formatter = monitorRequest.get('formatter')
         parser = HtmlContentParser()
         items = parser.parse(urlUsed, content, selector, conditions, formatter)
-        if not items:
+        responseData = None
+        if items:
+            message = 'Items got for %s.' % (slug, )
+            logging.info(message)
+            self.response.out.write(message)
+
+            oldhash = monitorRequest['fetchhash']
+            fetchhash = _calculateHash(items)
+            if oldhash != fetchhash:
+                responseData = {
+                        'origin': data['origin'],
+                        'result': {
+                            'items': items,
+                            'fetchhash': fetchhash,
+                        },
+                }
+        else:
             message = 'Failed to parse items from %s for %s by %s.' % (
                                   fetchurl, slug, selector)
             logging.error(message)
             self.response.out.write(message)
-            return
-        message = 'Items got for %s.' % (slug, )
-        logging.info(message)
-        self.response.out.write(message)
 
-        oldhash = monitorRequest['fetchhash']
-        fetchhash = _calculateHash(items)
-        if oldhash == fetchhash:
-            return
+            responseData = {
+                    'origin': data['origin'],
+                    'result': None,
+                }
 
-        callbackurl = data['callbackurl']
-        responseData = {
-                'origin': data['origin'],
-                'result': {
-                    'items': items,
-                    'fetchhash': fetchhash,
-                },
-        }
-        success = networkutil.postData(callbackurl, responseData, tag=slug,
-                    trycount=_CALLBACK_TRYCOUNT, timeout=_URL_TIMEOUT)
+        if responseData:
+            success = networkutil.postData(callbackurl, responseData, tag=slug,
+                        trycount=_CALLBACK_TRYCOUNT, timeout=_URL_TIMEOUT)
 
-        if success:
-            message = 'Push items back for %s to %s.' % (slug, callbackurl)
-        else:
-            message = 'Failed to push items back for %s to %s.' % (slug, callbackurl)
-        logging.info(message)
-        self.response.out.write(message)
+            if success:
+                message = 'Push items back for %s to %s.' % (slug, callbackurl)
+            else:
+                message = 'Failed to push items back for %s to %s.' % (slug, callbackurl)
+            logging.info(message)
+            self.response.out.write(message)
 
