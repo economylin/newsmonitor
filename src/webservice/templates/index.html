@@ -43,13 +43,13 @@
         <br/><br/>{{ link.path|safe }}
         <br/>{{ link.title }}: {{ link.url }}
     {% endfor %}
-    Items count: {{ items|length }}
+    <br/>Items count: {{ items|length }}
     {% for item in items %}
-        <br/>
+        <br/><br/>
 {% if item.url%}
 <a href="{{ item.url }}" target="_blank">{% if item.title%}{{ item.title }}{% else %}None{% endif %}</a>
 {% else %}{{ item.title }}{% endif %}
-        {% if item.imgurl %}<img src="{{ item.imgurl }}" width="{{ item.imgwidth }}" height="{{ item.imgheight }}"/>{% endif %}
+        {% if item.img %}<br/><img src="{{ item.img.url }}"/>{% endif %}
         {% if item.content %}<br/><p>{{ item.content }}</p>{% endif %}<br/>
     {% endfor %}
   </body>

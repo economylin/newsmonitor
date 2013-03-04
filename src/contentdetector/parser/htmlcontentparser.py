@@ -65,6 +65,8 @@ def isEnough(result, conditions, elementCount, elementIndex, element):
 def fillItemWithUrl(element, item):
     url = element.get('href')
     if url:
+        url = url.strip()
+    if url:
         item['url'] = url
 
 def fillItemWithTitle(element, item):
@@ -82,39 +84,34 @@ def fillItemWithContent(element, item):
         item['content'] = content
 
 def fillItemByLink(element, item):
-    title = lxmlutil.getCleanText(element)
-    if not title:
-        title = element.get('title')
+    fillItemWithUrl(element, item)
+    if 'title' not in item:
+        title = lxmlutil.getCleanText(element)
+        if not title:
+            title = element.get('title')
+            if title:
+                title = title.strip()
+        if not title:
+            match = pyquery.PyQuery(element)('img')
+            if match:
+                img = match[0]
+                alt = img.get('alt')
+                if alt:
+                    title = alt.strip()
+                    item['title'] = title
         if title:
-            title = title.strip()
-    url = element.get('href')
-    if title:
-        item['title'] = title
-    else:
-        match = pyquery.PyQuery(element)('img')
-        if match:
-            img = match[0]
-            alt = img.get('alt')
-            if alt:
-                title = alt.strip()
-                item['title'] = title
-    if url:
-        item['url'] = url
+            item['title'] = title
 
 def fillItemByImage(element, item):
     src = element.get('src')
     if src:
-        item['imgurl'] = src
-    width = element.get('width')
-    if width:
-        item['imgwidth'] = width
-    height = element.get('height')
-    if height:
-        item['imgheight'] = height
+        item['img'] = {'url': src}
 
 def fillItemByImageLink(element, item):
-    if not item.get('title'):
+    if 'title' not in item:
         alt = element.get('alt')
+        if alt:
+            alt = alt.strip()
         if alt:
             item['title'] = alt.strip()
 
@@ -151,7 +148,10 @@ def getElementValue(element, selector):
     if mainElement is None:
         return None
     if attr:
-        return mainElement.get(attr)
+        value = mainElement.get(attr)
+        if value:
+            value = value.strip()
+        return value
     return mainElement
 
 def getItem(element, conditions):
