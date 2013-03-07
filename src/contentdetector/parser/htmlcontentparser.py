@@ -62,69 +62,6 @@ def isEnough(result, conditions, elementCount, elementIndex, element):
         return len(result) > 0
     return elementIndex + 1 == elementCount
 
-def fillItemWithUrl(element, item):
-    url = element.get('href')
-    if url:
-        url = url.strip()
-    if url:
-        item['url'] = url
-
-def fillItemWithTitle(element, item):
-    title = lxmlutil.getCleanText(element)
-    if not title:
-        title = element.get('title')
-        if title:
-            title = title.strip()
-    if title:
-        item['title'] = title
-
-def fillItemWithContent(element, item):
-    content = lxmlutil.getCleanText(element)
-    if content:
-        item['content'] = content
-
-def fillItemByLink(element, item):
-    fillItemWithUrl(element, item)
-    if 'title' not in item:
-        title = lxmlutil.getCleanText(element)
-        if not title:
-            title = element.get('title')
-            if title:
-                title = title.strip()
-        if not title:
-            match = pyquery.PyQuery(element)('img')
-            if match:
-                img = match[0]
-                alt = img.get('alt')
-                if alt:
-                    title = alt.strip()
-                    item['title'] = title
-        if title:
-            item['title'] = title
-
-def fillItemByImage(element, item):
-    src = element.get('src')
-    if src:
-        item['img'] = {'url': src}
-
-def fillItemByImageLink(element, item):
-    if 'title' not in item:
-        alt = element.get('alt')
-        if alt:
-            alt = alt.strip()
-        if alt:
-            item['title'] = alt.strip()
-
-    fillItemByImage(element, item)
-
-    parent = element
-    while parent is not None:
-        parent = parent.getparent()
-        if parent is not None and parent.tag == 'a':
-            break
-    if parent is not None:
-        fillItemByLink(parent, item)
-
 def getElementValue(element, selector):
     main = selector
     attr = None
@@ -154,74 +91,106 @@ def getElementValue(element, selector):
         return value
     return mainElement
 
+def getValueBySelectors(element, selectors):
+    result = None
+    for selector in selectors:
+        matched = getElementValue(element, selector)
+        if matched is not None:
+            if isinstance(matched, basestring):
+                result = matched
+            else:
+                result = lxmlutil.getCleanText(matched)
+        if result:
+            break
+    return result
+
+def getParentLinkElement(element, selector):
+    match = pyquery.PyQuery(element)(selector)
+    if match:
+        parent = match[0]
+    else:
+        parent = None
+    while parent is not None:
+        parent = parent.getparent()
+        if parent is not None and parent.tag == 'a':
+            break
+    return parent
+
 def getItem(element, conditions):
     criterion = conditions.get('criterion')
+    titleSelectors = []
+    urlSelectors = []
+    contentSelectors = []
+    imgSelectors = []
     item = {}
-    if not criterion:
+    if criterion:
+        urlselector = criterion.get('url')
+        if urlselector:
+            urlSelectors.append(urlselector)
+        titleselector = criterion.get('title')
+        if titleselector:
+            titleSelectors.append(titleselector)
+        contentselector = criterion.get('content')
+        if contentselector:
+            contentSelectors.append(contentselector)
+        imgselector = criterion.get('image')
+        if imgselector:
+            titleSelectors.append(imgselector + '[alt]')
+            imgSelectors.append(imgselector + '[src]')
+        linkselector = criterion.get('link')
+        if linkselector:
+            titleSelectors.append(linkselector)
+            titleSelectors.append(linkselector + '[title]')
+            urlSelectors.append(linkselector + '[href]')
+        imglinkselector = criterion.get('imagelink')
+        if imglinkselector:
+            titleSelectors.append(imglinkselector + '[alt]')
+            imgSelectors.append(imglinkselector + '[src]')
+    else:
         if element.tag == 'img':
-            fillItemByImageLink(element, item)
+            titleSelectors.append('self[alt]')
+            imgSelectors.append('self[src]')
         elif element.tag == 'a':
-            fillItemByLink(element, item)
+            titleSelectors.append('self')
+            titleSelectors.append('self[title]')
+            urlSelectors.append('self[href]')
         else:
             match = pyquery.PyQuery(element)('a')
             if match:
                 element = match[0]
-            fillItemByLink(element, item)
-        return item
+                titleSelectors.append('self')
+                titleSelectors.append('self[title]')
+                urlSelectors.append('self[href]')
+    title = getValueBySelectors(element, titleSelectors)
+    if title:
+        item['title'] = title
 
-    urlselector = criterion.get('url')
-    if urlselector:
-        urlelement = getElementValue(element, urlselector)
-        if urlelement is not None:
-            if isinstance(urlelement, basestring):
-                item['url'] = urlelement
-            else:
-                fillItemWithUrl(urlelement, item)
+    url = getValueBySelectors(element, urlSelectors)
+    if url:
+        item['url'] = url
 
-    titleselector = criterion.get('title')
-    if titleselector:
-        titleelement = getElementValue(element, titleselector)
-        if titleelement is not None:
-            if isinstance(titleelement, basestring):
-                item['title'] = titleelement
-            else:
-                fillItemWithTitle(titleelement, item)
+    content = getValueBySelectors(element, contentSelectors)
+    if content:
+        item['content'] = content
 
-    contentselector = criterion.get('content')
-    if contentselector:
-        contentelement = getElementValue(element, contentselector)
-        if contentelement is not None:
-            if isinstance(contentelement, basestring):
-                item['content'] = contentelement
-            else:
-                fillItemWithContent(contentelement, item)
+    imgurl = getValueBySelectors(element, imgSelectors)
+    if imgurl:
+        item['img'] = {'url': imgurl}
 
-    imgselector = criterion.get('image')
-    if imgselector:
-        imageelement = getElementValue(element, imgselector)
-        if imageelement is not None:
-            if isinstance(imageelement, basestring):
-                item['imgurl'] = imageelement
-            else:
-                fillItemByImage(imageelement, item)
-
-    linkselector = criterion.get('link')
-    if linkselector:
-        linkelement = getElementValue(element, linkselector)
-        if linkelement is not None:
-            if isinstance(linkelement, basestring):
-                item['url'] = linkelement
-            else:
-                fillItemByLink(linkelement, item)
-
-    imglinkselector = criterion.get('imagelink')
+    # hard to integrate img parent link logic as above, so hard code here
+    imglinkselector = criterion and criterion.get('imagelink')
     if imglinkselector:
-        imglinkelement = getElementValue(element, imglinkselector)
-        if imglinkelement is not None:
-            if isinstance(imglinkelement, basestring):
-                item['imgurl'] = imglinkelement
-            else:
-                fillItemByImageLink(imglinkelement, item)
+        parentAElement = None
+        if 'title' not in item or 'url' not in item:
+            parentAElement = getParentLinkElement(element, imglinkselector)
+        if parentAElement is not None and 'title' not in item:
+            title = getValueBySelectors(parentAElement, ['self', 'self[title]'])
+            if title:
+                item['title'] = title
+        if parentAElement is not None and 'url' not in item:
+            url = getValueBySelectors(parentAElement, ['self[href]'])
+            if url:
+                item['url'] = url
 
     if item:
         return item
@@ -268,9 +237,9 @@ def formatItems(formatter, baseurl, items):
                 url = formatValueByPattern(item['url'],
                                             fromPattern, toFormat)
             item['url'] = url
-        imgurl = item.get('imgurl')
-        if imgurl:
-            item['imgurl'] = urlparse.urljoin(baseurl, imgurl)
+        img = item.get('img')
+        if img and 'url' in img:
+            item['img']['url'] = urlparse.urljoin(baseurl, item['img']['url'])
 
 class HtmlContentParser(ContentParser):
 
