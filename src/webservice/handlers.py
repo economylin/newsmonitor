@@ -66,6 +66,7 @@ class FetchPage(webapp2.RequestHandler):
             strsize = self.request.get('size')
             if strsize:
                 conditions['size'] = int(strsize)
+            conditions['imgtitle'] = bool(self.request.get('imgtitle'))
             excludelength = self.request.get('excludelength')
             if excludelength:
                 if 'exclude' not in conditions:

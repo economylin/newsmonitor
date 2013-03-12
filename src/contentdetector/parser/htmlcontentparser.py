@@ -29,19 +29,23 @@ def formatConditions(conditions):
             value[k2] = v2.encode('utf-8','ignore')
 
 def isExcluded(result, conditions, elementCount, elementIndex, element):
+    _MIN_TITLE_LENGTH = 8
+    imgtitle = conditions.get('imgtitle')
+    if not imgtitle:
+        content = lxmlutil.getCleanText(element)
+        if not content or len(content) < _MIN_TITLE_LENGTH:
+            return True
+
     econditions = conditions.get('exclude')
     if not econditions:
         return False
-    length = econditions.get('length')
-    content = lxmlutil.getCleanText(element)
-    if length:
-        if not content or len(content) < length:
-            return True
+
     selector = econditions.get('selector')
     if selector:
         match = pyquery.PyQuery(element)(selector)
         if match:
             return True
+
     return False
 
 def isIncluded(result, conditions, elementCount, elementIndex, element):
@@ -57,6 +61,7 @@ def isIncluded(result, conditions, elementCount, elementIndex, element):
 
 """
 size = -1 can be used to return all matched items.
+size = 0 also means returning the first one.
 """
 def isEnough(result, conditions, elementCount, elementIndex, element):
     size = conditions.get('size')
