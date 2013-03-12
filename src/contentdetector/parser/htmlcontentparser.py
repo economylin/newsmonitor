@@ -55,10 +55,12 @@ def isIncluded(result, conditions, elementCount, elementIndex, element):
             return False
     return True
 
+"""
+size = -1 can be used to return all matched items.
+"""
 def isEnough(result, conditions, elementCount, elementIndex, element):
-    econditions = conditions.get('enough')
-    returnAll = econditions and econditions.get('all')
-    if not returnAll:
+    size = conditions.get('size')
+    if not size:
         return len(result) > 0
     return elementIndex + 1 == elementCount
 
@@ -255,5 +257,8 @@ class HtmlContentParser(ContentParser):
         except Exception:
             items = None
             logging.exception('Error happens using selector %s.' % (selector, ))
+        size = conditions.get('size')
+        if items and size and size > 0 and size != len(items):
+            return []
         return items
 

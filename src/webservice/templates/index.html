@@ -7,8 +7,9 @@
     <form action="/fetch/" method="POST">
     Slug: <input type="text" name="slug" value="{{ newssource.slug }}" size="30"/>
     Name: <input type="text" name="name" value="{{ newssource.name }}" size="10"/>
-    Active: <input type="checkbox" name="active" {% if newssource.active %} checked {% endif %}/>
+    <br/>Active: <input type="checkbox" name="active" {% if newssource.active %} checked {% endif %}/>
     Order: <input type="text" name="order" value="{{ newssource.order }}" size="5"/>
+    Charts: <input type="checkbox" name="charts" {% if newssource.charts %} checked {% endif %}/>
     <br/>URL: <input type="text" name="fetchurl" value="{{ newssource.fetchurl }}" size="80"/>
     Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
     <br/>Header:<textarea name="httpheader" rows="1" cols="100">{{ httpheader }}</textarea>
@@ -21,11 +22,10 @@
     <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
 
     <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="40"/>
-    Return all: <input type="checkbox" name="enoughall" {% if newssource.conditions.enough.all %} checked {% endif %}/>
-    Charts: <input type="checkbox" name="charts" {% if newssource.charts %} checked {% endif %}/>
+    Matched size: <input type="text" name="size" value="{{ newssource.conditions.size }}" size="5"/>
     <br/>Exclude length: <input type="text" name="excludelength" value="{{ newssource.conditions.exclude.length }}" size="5"/>
     Exclude selector: <input type="text" name="excludeselector" value="{{ newssource.conditions.exclude.selector }}" size="30"/>
-    <br/>Has children: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
+    <br/>Include selector: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
     <br/>Url: <input type="text" name="urlselector" value="{{ newssource.conditions.criterion.url }}" size="30"/>
     Title: <input type="text" name="titleselector" value="{{ newssource.conditions.criterion.title }}" size="30"/>
     <br/>Content: <input type="text" name="contentselector" value="{{ newssource.conditions.criterion.content }}" size="30"/>

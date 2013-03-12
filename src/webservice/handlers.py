@@ -44,6 +44,7 @@ class FetchPage(webapp2.RequestHandler):
             newssource['slug'] = self.request.get('slug')
             newssource['name'] = self.request.get('name')
             newssource['order'] = self.request.get('order')
+            newssource['charts'] = bool(self.request.get('charts'))
             newssource['fetchurl'] = self.request.get('fetchurl')
             if newssource['fetchurl'] and not newssource['fetchurl'].startswith('http'):
                 newssource['fetchurl'] = 'http://' + newssource['fetchurl']
@@ -61,8 +62,10 @@ class FetchPage(webapp2.RequestHandler):
             oldContent = self.request.get('oldContent')
 
             newssource['selector'] = self.request.get('selector').strip()
-            newssource['charts'] = bool(self.request.get('charts'))
             conditions = {}
+            strsize = self.request.get('size')
+            if strsize:
+                conditions['size'] = int(strsize)
             excludelength = self.request.get('excludelength')
             if excludelength:
                 if 'exclude' not in conditions:
@@ -80,9 +83,6 @@ class FetchPage(webapp2.RequestHandler):
                 if 'include' not in conditions:
                     conditions['include'] = {}
                 conditions['include']['selector'] = includeselector
-            enoughall = newssource['charts'] or bool(self.request.get('enoughall'))
-            if enoughall:
-                conditions['enough'] = {'all': enoughall}
             urlselector = self.request.get('urlselector').strip()
             titleselector = self.request.get('titleselector').strip()
             imageselector = self.request.get('imageselector').strip()
@@ -137,13 +137,9 @@ class FetchPage(webapp2.RequestHandler):
                                 fetchResult.get('encoding.src'))
         if content:
             if selector:
-                tnewssource = copy.deepcopy(newssource)
-                if not tnewssource.get('conditions'):
-                    tnewssource['conditions'] = {}
-                tnewssource['conditions']['enough'] = {'all': True}
                 parser = HtmlContentParser()
                 items = parser.parse(urlUsed, content, selector,
-                tnewssource['conditions'], tnewssource.get('formatter'))
+                newssource['conditions'], newssource.get('formatter'))
             else:
                 links = linkdetector.detect(content, keyword)
 
