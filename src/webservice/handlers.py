@@ -66,7 +66,7 @@ class FetchPage(webapp2.RequestHandler):
             strsize = self.request.get('size')
             if strsize:
                 conditions['size'] = int(strsize)
-            conditions['imgtitle'] = bool(self.request.get('imgtitle'))
+            conditions['emptytitle'] = bool(self.request.get('emptytitle'))
             excludelength = self.request.get('excludelength')
             if excludelength:
                 if 'exclude' not in conditions:
@@ -140,7 +140,7 @@ class FetchPage(webapp2.RequestHandler):
             if selector:
                 parser = HtmlContentParser()
                 items = parser.parse(urlUsed, content, selector,
-                newssource['conditions'], newssource.get('formatter'))
+                newssource.get('conditions'), newssource.get('formatter'))
             else:
                 links = linkdetector.detect(content, keyword)
 

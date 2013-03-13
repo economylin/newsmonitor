@@ -23,7 +23,7 @@
 
     <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="40"/>
     Matched size: <input type="text" name="size" value="{{ newssource.conditions.size }}" size="5"/>
-    Image title: <input type="checkbox" name="imgtitle" {% if newssource.conditions.imgtitle %} checked {% endif %}/>
+    Empty title: <input type="checkbox" name="emptytitle" {% if newssource.conditions.emptytitle %} checked {% endif %}/>
     <br/>Exclude selector: <input type="text" name="excludeselector" value="{{ newssource.conditions.exclude.selector }}" size="30"/>
     Include selector: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
     <br/>Url: <input type="text" name="urlselector" value="{{ newssource.conditions.criterion.url }}" size="30"/>

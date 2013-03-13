@@ -29,13 +29,6 @@ def formatConditions(conditions):
             value[k2] = v2.encode('utf-8','ignore')
 
 def isExcluded(result, conditions, elementCount, elementIndex, element):
-    _MIN_TITLE_LENGTH = 8
-    imgtitle = conditions.get('imgtitle')
-    if not imgtitle:
-        content = lxmlutil.getCleanText(element)
-        if not content or len(content) < _MIN_TITLE_LENGTH:
-            return True
-
     econditions = conditions.get('exclude')
     if not econditions:
         return False
@@ -216,8 +209,13 @@ def getItems(htmlelement, selector, conditions):
         if isEnough(elements, conditions, elementCount, elementIndex, element):
             break
     items = []
+    _MIN_TITLE_LENGTH = 8 # TODO: this value should be configurable.
+    emptytitle = conditions.get('emptytitle')
     for element in elements:
         item = getItem(element, conditions)
+        if not emptytitle and ('title' not in item or
+                len(item['title']) < _MIN_TITLE_LENGTH):
+            continue
         if item:
             items.append(item)
     return items
