@@ -125,26 +125,37 @@ def getItem(element, conditions):
     item = {}
     if criterion:
         urlselector = criterion.get('url')
+        titleselector = criterion.get('title')
+        contentselector = criterion.get('content')
+        imgselector = criterion.get('image')
+        linkselector = criterion.get('link')
+        imglinkselector = criterion.get('imagelink')
+
+        # url
         if urlselector:
             urlSelectors.append(urlselector)
-        titleselector = criterion.get('title')
+        if linkselector:
+            urlSelectors.append(linkselector + '[href]')
+
+        # title
         if titleselector:
             titleSelectors.append(titleselector)
-        contentselector = criterion.get('content')
-        if contentselector:
-            contentSelectors.append(contentselector)
-        imgselector = criterion.get('image')
-        if imgselector:
-            titleSelectors.append(imgselector + '[alt]')
-            imgSelectors.append(imgselector + '[src]')
-        linkselector = criterion.get('link')
         if linkselector:
             titleSelectors.append(linkselector)
             titleSelectors.append(linkselector + '[title]')
-            urlSelectors.append(linkselector + '[href]')
-        imglinkselector = criterion.get('imagelink')
+        if imgselector:
+            titleSelectors.append(imgselector + '[alt]')
         if imglinkselector:
             titleSelectors.append(imglinkselector + '[alt]')
+
+        # content
+        if contentselector:
+            contentSelectors.append(contentselector)
+
+        # img
+        if imgselector:
+            imgSelectors.append(imgselector + '[src]')
+        if imglinkselector:
             imgSelectors.append(imglinkselector + '[src]')
     else:
         if element.tag == 'img':
