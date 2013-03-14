@@ -63,16 +63,8 @@ class FetchPage(webapp2.RequestHandler):
 
             newssource['selector'] = self.request.get('selector').strip()
             conditions = {}
-            strsize = self.request.get('size')
-            if strsize:
-                conditions['size'] = int(strsize)
+            conditions['returnall'] = bool(self.request.get('returnall'))
             conditions['emptytitle'] = bool(self.request.get('emptytitle'))
-            excludelength = self.request.get('excludelength')
-            if excludelength:
-                if 'exclude' not in conditions:
-                    conditions['exclude'] = {}
-                excludelength = int(excludelength)
-                conditions['exclude']['length'] = excludelength
             excludeselector = self.request.get('excludeselector').strip()
             if excludeselector:
                 if 'exclude' not in conditions:

@@ -28,7 +28,7 @@ def formatConditions(conditions):
                 continue
             value[k2] = v2.encode('utf-8','ignore')
 
-def isExcluded(result, conditions, elementCount, elementIndex, element):
+def isExcluded(conditions, element):
     econditions = conditions.get('exclude')
     if not econditions:
         return False
@@ -41,7 +41,7 @@ def isExcluded(result, conditions, elementCount, elementIndex, element):
 
     return False
 
-def isIncluded(result, conditions, elementCount, elementIndex, element):
+def isIncluded(conditions, element):
     iconditions = conditions.get('include')
     if not iconditions:
         return True
@@ -51,16 +51,6 @@ def isIncluded(result, conditions, elementCount, elementIndex, element):
         if not match:
             return False
     return True
-
-"""
-size = -1 can be used to return all matched items.
-size = 0 also means returning the first one.
-"""
-def isEnough(result, conditions, elementCount, elementIndex, element):
-    size = conditions.get('size')
-    if not size:
-        return len(result) > 0
-    return elementIndex + 1 == elementCount
 
 def getElementValue(element, selector):
     main = selector
@@ -207,28 +197,38 @@ def getItem(element, conditions):
         return item
     return None
 
+def isItemNeeded(conditions, item):
+    _MIN_TITLE_LENGTH = 8 # TODO: this value should be configurable.
+    emptytitle = conditions.get('emptytitle')
+    return emptytitle or ('title' in item and
+                len(item['title']) >= _MIN_TITLE_LENGTH)
+
+def isEnough(conditions, items):
+    returnAll = conditions.get('returnall')
+    return not returnAll
+
 def getItems(htmlelement, selector, conditions):
     queryobj = pyquery.PyQuery(htmlelement)(selector)
     elements = []
     elementCount = len(queryobj)
-    for elementIndex, element in enumerate(queryobj):
-        if isExcluded(elements, conditions, elementCount, elementIndex, element):
-            continue
-        if not isIncluded(elements, conditions, elementCount, elementIndex, element):
-            continue
-        elements.append(element)
-        if isEnough(elements, conditions, elementCount, elementIndex, element):
-            break
     items = []
-    _MIN_TITLE_LENGTH = 8 # TODO: this value should be configurable.
-    emptytitle = conditions.get('emptytitle')
-    for element in elements:
-        item = getItem(element, conditions)
-        if not emptytitle and ('title' not in item or
-                len(item['title']) < _MIN_TITLE_LENGTH):
+    for element in queryobj:
+        if isExcluded(conditions, element):
             continue
-        if item:
-            items.append(item)
+        if not isIncluded(conditions, element):
+            continue
+
+        item = getItem(element, conditions)
+        if not item:
+            continue
+
+        if not isItemNeeded(conditions, item):
+            continue
+
+        items.append(item)
+
+        if isEnough(conditions, items):
+            break
     return items
 
 def formatValueByPattern(value, fromPattern, toFormat):
@@ -271,8 +271,5 @@ class HtmlContentParser(ContentParser):
         except Exception:
             items = None
             logging.exception('Error happens using selector %s.' % (selector, ))
-        size = conditions.get('size')
-        if items and size and size > 0 and size != len(items):
-            return []
         return items
 

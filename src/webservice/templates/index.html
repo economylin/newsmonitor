@@ -22,7 +22,7 @@
     <input type="button" value="Clean" onclick="(this.parent || this.parentNode).content.value='';"/>
 
     <br/>Selector: <input type="text" name="selector" value="{{ newssource.selector }}" size="40"/>
-    Matched size: <input type="text" name="size" value="{{ newssource.conditions.size }}" size="5"/>
+    Return all: <input type="checkbox" name="returnall" {% if newssource.conditions.returnall %} checked {% endif %}/>
     Empty title: <input type="checkbox" name="emptytitle" {% if newssource.conditions.emptytitle %} checked {% endif %}/>
     <br/>Exclude selector: <input type="text" name="excludeselector" value="{{ newssource.conditions.exclude.selector }}" size="30"/>
     Include selector: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
