@@ -11,7 +11,10 @@ from contentfetcher import ContentFetcher
 from contentdetector import HtmlContentParser
 from contentdetector import linkdetector
 
-_DEFAULT_NEWSSOURCE = {'active': True}
+_DEFAULT_NEWSSOURCE = {
+    'active': True,
+    'conditions': {'returnall': True},
+}
 class FetchPage(webapp2.RequestHandler):
     def _render(self, templateValues):
         self.response.headers['Content-Type'] = 'text/html'

@@ -61,13 +61,15 @@ def getElementValue(element, selector):
         if rindex >= 0 and selector.find('"', rindex) < 0:
             main = selector[:rindex]
             attr = selector[rindex + 1:-1]
+    reservedAttrs = ['@text', '@tail']
     mainElement = None
     if main == 'self':
         mainElement = element
     elif main == 'parent':
         mainElement = element.getparent()
     else:
-        if attr:# element with required attribute
+        if attr and attr not in reservedAttrs:
+            # element with required attribute
             main = main + '[' + attr + ']'
         match = pyquery.PyQuery(element)(main)
         if match:
@@ -75,9 +77,13 @@ def getElementValue(element, selector):
     if mainElement is None:
         return None
     if attr:
-        value = mainElement.get(attr)
-        if value:
-            value = value.strip()
+        if attr == '@text':
+            value = mainElement.text
+        elif attr == '@tail':
+            value = mainElement.tail
+        else:
+            value = mainElement.get(attr)
+        value = lxmlutil.getPureString(value)
         return value
     return mainElement
 
