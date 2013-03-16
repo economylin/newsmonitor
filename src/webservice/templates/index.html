@@ -4,13 +4,19 @@
 <title>Fetch page</title>
 </head>
   <body>
+    {% if pageinfo and pageinfo.page %}{{ pageinfo.page.title }};{% endif %}
+    {% if pageinfo and pageinfo.alexa %}Reach:{{ pageinfo.alexa.reach }}; Rank:{{ pageinfo.alexa.countryrank }};{% endif %}
+    {% if pageinfo and pageinfo.pagerank >= 0 %}PR: {{ pageinfo.pagerank }};{% endif %}
+    {% if pageinfo and pageinfo.dmoz %}<br/>{% for category in pageinfo.dmoz.categories %}{{ category }}; {% endfor %}{% endif %}
     <form action="/fetch/" method="POST">
+    <input type="hidden" name="pageinfo" value="{{ strpageinfo }}"/>
     Slug: <input type="text" name="slug" value="{{ newssource.slug }}" size="30"/>
     Name: <input type="text" name="name" value="{{ newssource.name }}" size="10"/>
     <br/>Active: <input type="checkbox" name="active" {% if newssource.active %} checked {% endif %}/>
     Order: <input type="text" name="order" value="{{ newssource.order }}" size="5"/>
     Charts: <input type="checkbox" name="charts" {% if newssource.charts %} checked {% endif %}/>
     <br/>URL: <input type="text" name="fetchurl" value="{{ newssource.fetchurl }}" size="80"/>
+    {% if newssource.fetchurl %}<a target="_blank" href="{{ newssource.fetchurl }}">{{ newssource.name }}</a>{% endif %}
     Encoding: <input type="text" name="encoding" value="{{ newssource.encoding }}" size="10"/>
     <br/>Header:<textarea name="httpheader" rows="1" cols="100">{{ httpheader }}</textarea>
     <br/>Tags: <input type="text" name="tags" size="80" value="{{ newssource.tags }}"/>

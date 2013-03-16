@@ -1,5 +1,6 @@
 import copy
 import json
+import jsonpickle
 import os
 import urlparse
 
@@ -8,6 +9,8 @@ import webapp2
 
 from commonutil import jsonutil
 from contentfetcher import ContentFetcher
+from pagemeta import pmapi
+
 from contentdetector import HtmlContentParser
 from contentdetector import linkdetector
 
@@ -29,7 +32,8 @@ class FetchPage(webapp2.RequestHandler):
 
     def post(self):
         action = self.request.get('action')
-        keyword = self.request.get('keyword').strip()
+        keyword = ''
+        pageinfo = None
         if action == 'JSON':
             jsonstr = self.request.get('jsonstr')
             if jsonstr:
@@ -42,6 +46,10 @@ class FetchPage(webapp2.RequestHandler):
             httpheader = ''
             formatter = ''
         else:
+            keyword = self.request.get('keyword').strip()
+            pageinfo = self.request.get('pageinfo').strip()
+            if pageinfo:
+                pageinfo = jsonpickle.decode(pageinfo)
             newssource = {}
             newssource['active'] = bool(self.request.get('active'))
             newssource['slug'] = self.request.get('slug')
@@ -145,6 +153,9 @@ class FetchPage(webapp2.RequestHandler):
         if newssource.get('formatter'):
             formatter = jsonutil.getReadableString(newssource['formatter'])
 
+        if not pageinfo and fetchurl:
+            pageinfo = pmapi.getPage(fetchurl)
+
         templateValues = {
             'newssource': newssource,
             'httpheader': httpheader,
@@ -157,6 +168,8 @@ class FetchPage(webapp2.RequestHandler):
             'links': links,
             'items': items,
             'jsonstr': jsonstr,
+            'pageinfo': pageinfo,
+            'strpageinfo': jsonpickle.encode(pageinfo),
         }
         self._render(templateValues)
 
