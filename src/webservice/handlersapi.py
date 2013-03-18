@@ -25,13 +25,13 @@ def _calculateHash(items):
             lines.append(title)
     return stringutil.calculateHash(lines)
 
-def _fetchContent(data, triedcount):
+def _fetchContent(data, triedcount, feedback):
     fetchurl = data['fetchurl']
     header = data.get('header')
     encoding = data.get('encoding')
     fetcher = ContentFetcher(fetchurl, header=header,
                                 encoding=encoding, tried=triedcount)
-    fetchResult = fetcher.fetch()
+    fetchResult = fetcher.fetch(feedback)
     content = fetchResult.get('content')
     urlUsed = fetchResult.get('url')
     return urlUsed, content
@@ -76,7 +76,8 @@ class SingleFetchResponse(webapp2.RequestHandler):
 
         triedcount = data.get('triedcount', 0)
         monitorRequest = data['request']
-        urlUsed, content = _fetchContent(monitorRequest, triedcount)
+        feedback = {}
+        urlUsed, content = _fetchContent(monitorRequest, triedcount, feedback)
         slug = monitorRequest['slug']
         fetchurl = monitorRequest['fetchurl']
         if not content:
@@ -90,14 +91,15 @@ class SingleFetchResponse(webapp2.RequestHandler):
                 data['triedcount'] = triedcount
                 taskqueue.add(queue_name="default", payload=json.dumps(data),
                             url='/fetch/single/')
-            return
-
-        selector = monitorRequest['selector']
-        conditions = monitorRequest.get('conditions')
-        formatter = monitorRequest.get('formatter')
-        parser = HtmlContentParser()
-        items = parser.parse(urlUsed, content, selector, conditions, formatter)
-        responseData = None
+                return
+        items = None
+        if content:
+            selector = monitorRequest['selector']
+            conditions = monitorRequest.get('conditions')
+            formatter = monitorRequest.get('formatter')
+            parser = HtmlContentParser()
+            items = parser.parse(urlUsed, content, selector, conditions, formatter)
+            responseData = None
         if items:
             message = 'Items got for %s.' % (slug, )
             logging.info(message)
@@ -114,15 +116,22 @@ class SingleFetchResponse(webapp2.RequestHandler):
                         },
                 }
         else:
-            message = 'Failed to parse items from %s for %s by %s.' % (
-                                  fetchurl, slug, selector)
-            logging.error(message)
-            self.response.out.write(message)
-
             responseData = {
                     'origin': data['origin'],
                     'result': None,
                 }
+
+            if content:
+                message = 'Failed to parse items from %s for %s by %s.' % (
+                                      fetchurl, slug, selector)
+            elif feedback.get('overflow'):
+                message = 'Quote overflow.'
+                responseData['overflow'] = True
+            else:
+                message = 'Failed to fetch content from %s for %s.' % (
+                                        fetchurl, slug)
+            logging.error(message)
+            self.response.out.write(message)
 
         if responseData:
             success = networkutil.postData(callbackurl, responseData, tag=slug,
