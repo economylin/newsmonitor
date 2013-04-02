@@ -5,7 +5,7 @@ from google.appengine.api import taskqueue
 
 import webapp2
 
-from commonutil import stringutil
+from commonutil import stringutil, lxmlutil
 from commonutil import networkutil
 from contentfetcher import ContentFetcher
 from contentdetector import HtmlContentParser
@@ -94,6 +94,7 @@ class SingleFetchResponse(webapp2.RequestHandler):
                 return
         items = None
         if content:
+            content = lxmlutil.removeEncodingDeclaration(content)
             selector = monitorRequest['selector']
             conditions = monitorRequest.get('conditions')
             formatter = monitorRequest.get('formatter')

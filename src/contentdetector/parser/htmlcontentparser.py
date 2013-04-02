@@ -270,8 +270,8 @@ class HtmlContentParser(ContentParser):
         if conditions is None:
             conditions = {}
         formatConditions(conditions)
-        htmlelement = lxml.html.fromstring(content)
         try:
+            htmlelement = lxml.html.fromstring(content)
             items = getItems(htmlelement, selector, conditions)
             formatItems(formatter, baseurl, items)
         except Exception:

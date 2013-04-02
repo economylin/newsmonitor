@@ -1,4 +1,7 @@
+import logging
 import lxml
+
+from commonutil import lxmlutil
 
 def _getElementPath(element):
     result = [unicode(element.tag)]
@@ -29,9 +32,13 @@ def _findLink(result, path, element, keyword):
         _findLink(result, childpath, childelement, keyword)
 
 def detect(content, keyword):
-    htmlelement = lxml.html.fromstring(content)
-    result = []
-    path = [_getElementPath(htmlelement)]
-    _findLink(result, path, htmlelement, keyword)
+    try:
+        htmlelement = lxml.html.fromstring(content)
+        result = []
+        path = [_getElementPath(htmlelement)]
+        _findLink(result, path, htmlelement, keyword)
+    except Exception:
+        result = None
+        logging.exception('Error happens.')
     return result
 

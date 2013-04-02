@@ -1,13 +1,14 @@
 import copy
 import json
 import jsonpickle
+import logging
 import os
 import urlparse
 
 from google.appengine.ext.webapp import template
 import webapp2
 
-from commonutil import jsonutil
+from commonutil import jsonutil, lxmlutil
 from contentfetcher import ContentFetcher
 from pagemeta import pmapi
 
@@ -140,6 +141,7 @@ class FetchPage(webapp2.RequestHandler):
             encodingUsed = '%s-%s' % (fetchResult.get('encoding'),
                                 fetchResult.get('encoding.src'))
         if content:
+            content = lxmlutil.removeEncodingDeclaration(content)
             if selector:
                 parser = HtmlContentParser()
                 items = parser.parse(urlUsed, content, selector,
