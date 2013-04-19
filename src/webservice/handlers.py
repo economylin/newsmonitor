@@ -1,6 +1,5 @@
 import copy
 import json
-import jsonpickle
 import logging
 import os
 import urlparse
@@ -50,7 +49,7 @@ class FetchPage(webapp2.RequestHandler):
             keyword = self.request.get('keyword').strip()
             pageinfo = self.request.get('pageinfo').strip()
             if pageinfo:
-                pageinfo = jsonpickle.decode(pageinfo)
+                pageinfo = json.loads(pageinfo)
             newssource = {}
             newssource['active'] = bool(self.request.get('active'))
             newssource['slug'] = self.request.get('slug')
@@ -171,7 +170,7 @@ class FetchPage(webapp2.RequestHandler):
             'items': items,
             'jsonstr': jsonstr,
             'pageinfo': pageinfo,
-            'strpageinfo': jsonpickle.encode(pageinfo),
+            'strpageinfo': json.dumps(pageinfo),
         }
         self._render(templateValues)
 
