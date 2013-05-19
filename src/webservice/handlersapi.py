@@ -9,6 +9,7 @@ from commonutil import stringutil, lxmlutil
 from commonutil import networkutil
 from contentfetcher import ContentFetcher
 from contentdetector import HtmlContentParser
+from . import models
 
 _URL_TIMEOUT = 30
 _FETCH_TRYCOUNT = 3
@@ -93,6 +94,7 @@ class SingleFetchResponse(webapp2.RequestHandler):
                             url='/fetch/single/')
                 return
         items = None
+        responseData = None
         if content:
             content = lxmlutil.removeEncodingDeclaration(content)
             selector = monitorRequest['selector']
@@ -100,15 +102,18 @@ class SingleFetchResponse(webapp2.RequestHandler):
             formatter = monitorRequest.get('formatter')
             parser = HtmlContentParser()
             items = parser.parse(urlUsed, content, selector, conditions, formatter)
-            responseData = None
+        sourceSlug = data['origin']['common']['slug']
         if items:
+            sourceDeprecated = models.isSourceDeprecated(sourceSlug)
+            if sourceDeprecated:
+                models.removeDeprecatedSource(sourceSlug)
             message = 'Items got for %s.' % (slug, )
             logging.info(message)
             self.response.out.write(message)
 
             oldhash = monitorRequest['fetchhash']
             fetchhash = _calculateHash(items)
-            if oldhash != fetchhash:
+            if oldhash != fetchhash or sourceDeprecated:
                 responseData = {
                         'origin': data['origin'],
                         'result': {
@@ -117,6 +122,7 @@ class SingleFetchResponse(webapp2.RequestHandler):
                         },
                 }
         else:
+            models.addDeprecatedSource(sourceSlug)
             responseData = {
                     'origin': data['origin'],
                     'result': None,
