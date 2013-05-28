@@ -39,6 +39,15 @@ def _fetchContent(data, triedcount, feedback):
 
 class FetchRequest(webapp2.RequestHandler):
     def post(self):
+        data = json.loads(self.request.body)
+        uuid = data.get('uuid')
+        if networkutil.isUuidHandled(uuid):
+            message = 'FetchRequest: %s is already handled.' % (uuid, )
+            logging.warn(message)
+            self.response.out.write(message)
+            return
+        networkutil.updateUuids(uuid)
+
         rawdata = self.request.body
         taskqueue.add(queue_name="default", payload=rawdata, url='/fetch/batch/')
         self.response.headers['Content-Type'] = 'text/plain'
@@ -50,14 +59,6 @@ class BatchFetchRequest(webapp2.RequestHandler):
     def post(self):
         self.response.headers['Content-Type'] = 'text/plain'
         data = json.loads(self.request.body)
-
-        uuid = data.get('uuid')
-        if networkutil.isUuidHandled(uuid):
-            message = 'BatchFetchRequest: %s is already handled.' % (uuid, )
-            logging.warn(message)
-            self.response.out.write(message)
-            return
-        networkutil.updateUuids(uuid)
 
         callbackurl = data['callbackurl']
         items = data['items']

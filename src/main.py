@@ -4,8 +4,8 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'library'))
 
-import webservice.handlers
-import webservice.handlersapi
+import monitor.handlers
+import monitor.handlersapi
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -15,10 +15,10 @@ class MainPage(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
 ('/', MainPage),
-('/fetch/', webservice.handlers.FetchPage),
-('/api/fetch/', webservice.handlersapi.FetchRequest),
-('/fetch/batch/', webservice.handlersapi.BatchFetchRequest),
-('/fetch/single/', webservice.handlersapi.SingleFetchResponse),
+('/fetch/', monitor.handlers.FetchPage),
+('/api/fetch/', monitor.handlersapi.FetchRequest),
+('/fetch/batch/', monitor.handlersapi.BatchFetchRequest),
+('/fetch/single/', monitor.handlersapi.SingleFetchResponse),
 ],
-                              debug=True)
+debug=os.environ['SERVER_SOFTWARE'].startswith('Dev'))
 
