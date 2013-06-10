@@ -5,7 +5,7 @@ import urlparse
 
 import lxml
 import pyquery
-from commonutil import lxmlutil
+from commonutil import htmlutil, lxmlutil
 
 from contentparser import ContentParser
 
@@ -112,8 +112,7 @@ def getParentLinkElement(element, selector):
             break
     return parent
 
-def getItem(element, conditions):
-    criterion = conditions.get('criterion')
+def getItem(element, criterion):
     titleSelectors = []
     urlSelectors = []
     contentSelectors = []
@@ -203,6 +202,20 @@ def getItem(element, conditions):
         return item
     return None
 
+def getItemFromScript(element):
+    if element.tag != 'a':
+        return None
+    url = element.get('href')
+    title = lxmlutil.getScriptConstantString(element)
+    if title:
+        title = htmlutil.getTextContent(title)
+    item = {}
+    if url:
+        item['url'] = url
+    if title:
+        item['title'] = title
+    return item
+
 def isItemNeeded(conditions, item):
     _MIN_TITLE_LENGTH = 8 # TODO: this value should be configurable.
     emptytitle = conditions.get('emptytitle')
@@ -223,8 +236,11 @@ def getItems(htmlelement, selector, conditions):
             continue
         if not isIncluded(conditions, element):
             continue
-
-        item = getItem(element, conditions)
+        if conditions.get('scripttext'):
+            item = getItemFromScript(element)
+        else:
+            criterion = conditions.get('criterion')
+            item = getItem(element, criterion)
         if not item:
             continue
 

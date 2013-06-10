@@ -76,6 +76,7 @@ class FetchPage(webapp2.RequestHandler):
             conditions = {}
             conditions['returnall'] = bool(self.request.get('returnall'))
             conditions['emptytitle'] = bool(self.request.get('emptytitle'))
+            conditions['scripttext'] = bool(self.request.get('scripttext'))
             excludeselector = self.request.get('excludeselector').strip()
             if excludeselector:
                 if 'exclude' not in conditions:
