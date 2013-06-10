@@ -12,12 +12,14 @@ from contentfetcher import ContentFetcher
 from pagemeta import pmapi
 
 from contentdetector import HtmlContentParser
-from contentdetector import linkdetector
+from contentdetector import linkdetector, detaildetector
 
 _DEFAULT_NEWSSOURCE = {
     'active': True,
     'conditions': {'returnall': True},
 }
+
+
 class FetchPage(webapp2.RequestHandler):
     def _render(self, templateValues):
         self.response.headers['Content-Type'] = 'text/html'
@@ -76,6 +78,7 @@ class FetchPage(webapp2.RequestHandler):
             conditions = {}
             conditions['returnall'] = bool(self.request.get('returnall'))
             conditions['emptytitle'] = bool(self.request.get('emptytitle'))
+            conditions['detectdetail'] = bool(self.request.get('detectdetail'))
             conditions['scripttext'] = bool(self.request.get('scripttext'))
             excludeselector = self.request.get('excludeselector').strip()
             if excludeselector:
@@ -148,6 +151,9 @@ class FetchPage(webapp2.RequestHandler):
                 newssource.get('conditions'), newssource.get('formatter'))
             else:
                 links = linkdetector.detect(content, keyword)
+
+        if items and newssource.get('conditions', {}).get('detectdetail'):
+            detaildetector.populateDetailUrls(items)
 
         if newssource.get('header'):
             httpheader = jsonutil.getReadableString(newssource['header'])

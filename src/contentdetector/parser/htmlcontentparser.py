@@ -279,6 +279,7 @@ def formatItems(formatter, baseurl, items):
         if img and 'url' in img:
             item['img']['url'] = urlparse.urljoin(baseurl, item['img']['url'])
 
+
 class HtmlContentParser(ContentParser):
 
     def parse(self, baseurl, content, selector, conditions, formatter=None):

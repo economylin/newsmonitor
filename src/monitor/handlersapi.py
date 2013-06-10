@@ -8,7 +8,7 @@ import webapp2
 from commonutil import stringutil, lxmlutil
 from commonutil import networkutil
 from contentfetcher import ContentFetcher
-from contentdetector import HtmlContentParser
+from contentdetector import HtmlContentParser, detaildetector
 from . import models
 
 _URL_TIMEOUT = 30
@@ -99,10 +99,13 @@ class SingleFetchResponse(webapp2.RequestHandler):
         if content:
             content = lxmlutil.removeEncodingDeclaration(content)
             selector = monitorRequest['selector']
-            conditions = monitorRequest.get('conditions')
+            conditions = monitorRequest.get('conditions', {})
             formatter = monitorRequest.get('formatter')
             parser = HtmlContentParser()
             items = parser.parse(urlUsed, content, selector, conditions, formatter)
+
+            if items and conditions.get('detectdetail'):
+                detaildetector.populateDetailUrls(items)
         sourceSlug = data['origin']['common']['slug']
         if items:
             sourceDeprecated = models.isSourceDeprecated(sourceSlug)

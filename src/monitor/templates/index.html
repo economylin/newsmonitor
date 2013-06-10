@@ -32,6 +32,7 @@
     Empty title: <input type="checkbox" name="emptytitle" {% if newssource.conditions.emptytitle %} checked {% endif %}/>
     <br/>Exclude selector: <input type="text" name="excludeselector" value="{{ newssource.conditions.exclude.selector }}" size="30"/>
     Include selector: <input type="text" name="includeselector" value="{{ newssource.conditions.include.selector }}" size="30"/>
+    <br/>Detect detail: <input type="checkbox" name="detectdetail" {% if newssource.conditions.detectdetail %} checked {% endif %}/>
     Script text: <input type="checkbox" name="scripttext" {% if newssource.conditions.scripttext %} checked {% endif %}/>
     <br/>Url: <input type="text" name="urlselector" value="{{ newssource.conditions.criterion.url }}" size="30"/>
     Title: <input type="text" name="titleselector" value="{{ newssource.conditions.criterion.title }}" size="30"/>
