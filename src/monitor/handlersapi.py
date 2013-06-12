@@ -104,7 +104,7 @@ class SingleFetchResponse(webapp2.RequestHandler):
             parser = HtmlContentParser()
             items = parser.parse(urlUsed, content, selector, conditions, formatter)
 
-            if items and conditions.get('detectdetail'):
+            if items and conditions and conditions.get('detectdetail'):
                 detaildetector.populateDetailUrls(items)
         sourceSlug = data['origin']['common']['slug']
         if items:
